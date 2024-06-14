@@ -1,0 +1,6 @@
+obj\Release\net6.0\plc\gds/IForceService.cs \
+obj\Release\net6.0\plc\gds/IForceServiceGrpc.cs: Protobuf/Plc/Gds/DataAccessError.proto\
+ Protobuf/ArpTypes.proto\
+ Protobuf/Plc/Gds/ForceItem.proto\
+ C:/Users/eq9ifs/.nuget/packages/grpc.tools/2.64.0/build/native/include/google/protobuf/empty.proto\
+ Protobuf/Plc/Gds/IForceService.proto

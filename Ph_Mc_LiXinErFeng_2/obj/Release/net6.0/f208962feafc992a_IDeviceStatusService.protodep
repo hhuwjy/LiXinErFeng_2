@@ -1,0 +1,3 @@
+obj\Release\net6.0\device\interface/IDeviceStatusService.cs \
+obj\Release\net6.0\device\interface/IDeviceStatusServiceGrpc.cs: Protobuf/ArpTypes.proto\
+ Protobuf/Device/Interface/IDeviceStatusService.proto

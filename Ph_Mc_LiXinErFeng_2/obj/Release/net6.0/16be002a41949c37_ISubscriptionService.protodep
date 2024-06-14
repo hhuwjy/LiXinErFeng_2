@@ -1,0 +1,7 @@
+obj\Release\net6.0\plc\gds/ISubscriptionService.cs \
+obj\Release\net6.0\plc\gds/ISubscriptionServiceGrpc.cs: Protobuf/Plc/Gds/DataAccessError.proto\
+ Protobuf/Plc/Gds/SubscriptionKind.proto\
+ Protobuf/Plc/DataType.proto\
+ Protobuf/Plc/Gds/VariableInfo.proto\
+ Protobuf/ArpTypes.proto\
+ Protobuf/Plc/Gds/ISubscriptionService.proto

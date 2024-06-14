@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Protobuf\Plc\DataType.proto" />
+		<None Remove="Protobuf\Plc\Gds\ForceItem.proto" />
+		<None Remove="Protobuf\Plc\Gds\IForceService.proto" />
+	</ItemGroup>
+	
+	
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.27.1" />
+    <PackageReference Include="Grpc.Core" Version="2.46.6" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.63.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.64.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="HslCommunication" Version="12.0.2" />
+    <PackageReference Include="NPOI" Version="2.7.0" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.374.54" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="Protobuf\ArpTypes.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+		<Protobuf Include="Protobuf\Device\Interface\IDeviceStatusService.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+		<Protobuf Include="Protobuf\Plc\DataType.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+		<Protobuf Include="Protobuf\Plc\Gds\DataAccessError.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+		<Protobuf Include="Protobuf\Plc\Gds\ForceItem.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+		<Protobuf Include="Protobuf\Plc\Gds\IDataAccessService.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+		<Protobuf Include="Protobuf\Plc\Gds\IForceService.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+		<Protobuf Include="Protobuf\Plc\Gds\ReadItem.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+		<Protobuf Include="Protobuf\Plc\Gds\WriteItem.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+		<Protobuf Include="Protobuf\Plc\Gds\ISubscriptionService.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+		<Protobuf Include="Protobuf\Plc\Gds\SubscriptionKind.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+		<Protobuf Include="Protobuf\Plc\Gds\VariableInfo.proto" GrpcServers="Client" ProtoRoot="Protobuf" />
+
+	</ItemGroup>
+	
+	
+</Project>

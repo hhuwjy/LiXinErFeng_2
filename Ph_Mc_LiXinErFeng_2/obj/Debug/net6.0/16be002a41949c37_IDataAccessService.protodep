@@ -1,0 +1,6 @@
+obj\Debug\net6.0\plc\gds/IDataAccessService.cs \
+obj\Debug\net6.0\plc\gds/IDataAccessServiceGrpc.cs: Protobuf/Plc/Gds/DataAccessError.proto\
+ Protobuf/ArpTypes.proto\
+ Protobuf/Plc/Gds/ReadItem.proto\
+ Protobuf/Plc/Gds/WriteItem.proto\
+ Protobuf/Plc/Gds/IDataAccessService.proto

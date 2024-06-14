@@ -1,0 +1,4 @@
+D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\LiXinErFeng_MC_2\Ph_Mc_LiXinErFeng_2\Ph_Mc_LiXinErFeng_2\bin\Release\net6.0\publish\linux-x64\Ph_Mc_LiXinErFeng_2.pdb
+D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\LiXinErFeng_MC_2\Ph_Mc_LiXinErFeng_2\Ph_Mc_LiXinErFeng_2\bin\Release\net6.0\publish\linux-x64\libgrpc_csharp_ext.x64.so
+D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\LiXinErFeng_MC_2\Ph_Mc_LiXinErFeng_2\Ph_Mc_LiXinErFeng_2\bin\Release\net6.0\publish\linux-x64\libSystem.IO.Ports.Native.so
+D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\LiXinErFeng_MC_2\Ph_Mc_LiXinErFeng_2\Ph_Mc_LiXinErFeng_2\bin\Release\net6.0\publish\linux-x64\Ph_Mc_LiXinErFeng_2

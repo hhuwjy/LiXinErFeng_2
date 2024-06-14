@@ -1,0 +1,2 @@
+obj\Release\net6.0\linux-x64\plc\gds/VariableInfo.cs: Protobuf/Plc/DataType.proto\
+ Protobuf/Plc/Gds/VariableInfo.proto

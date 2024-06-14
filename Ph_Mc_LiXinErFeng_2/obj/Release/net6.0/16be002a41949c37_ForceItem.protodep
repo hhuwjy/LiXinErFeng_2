@@ -1,0 +1,2 @@
+obj\Release\net6.0\plc\gds/ForceItem.cs: Protobuf/ArpTypes.proto\
+ Protobuf/Plc/Gds/ForceItem.proto
