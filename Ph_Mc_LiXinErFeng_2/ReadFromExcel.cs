@@ -19,7 +19,7 @@ namespace Ph_Mc_LiXinErFeng
 
     public class ReadExcel
     {
-       
+
         public XSSFWorkbook connectExcel(string excelFilePath)
         {
             XSSFWorkbook xssWorkbook = null;
@@ -30,9 +30,10 @@ namespace Ph_Mc_LiXinErFeng
                 return xssWorkbook;
             }
 
-           
 
-            try {
+
+            try
+            {
                 using (FileStream stream = new FileStream(excelFilePath, FileMode.Open))
                 {
                     stream.Position = 0;
@@ -40,7 +41,7 @@ namespace Ph_Mc_LiXinErFeng
                     stream.Close();
                 }
             }
-            catch (Exception )
+            catch (Exception)
             {
                 return xssWorkbook;
                 throw;
@@ -62,13 +63,13 @@ namespace Ph_Mc_LiXinErFeng
         {
             DataTable dtTable = new DataTable();
             List<string> rowList = new List<string>();
-            
-           
+
+
             //sheet = xssWorkbook.GetSheetAt(0);
-            ISheet sheet = xssWorkbook.GetSheet(sheetName);
+            ISheet sheet = xssWorkbook.GetSheet(sheetName.Trim());
             if (sheet == null)
             {
-                Console.WriteLine(sheetName+ "页不存在");
+                Console.WriteLine(sheetName + "页不存在");
                 return null;
 
             }
@@ -77,7 +78,7 @@ namespace Ph_Mc_LiXinErFeng
             IRow headerRow = sheet.GetRow(0);
             int cellCount = headerRow.LastCellNum;
 
-     
+
 
             List<StationInfoStruct_MC> retList = new List<StationInfoStruct_MC>();
 
@@ -107,10 +108,12 @@ namespace Ph_Mc_LiXinErFeng
                     {
                         if (!string.IsNullOrEmpty(row.GetCell(j).ToString()) && !string.IsNullOrWhiteSpace(row.GetCell(j).ToString()))
                         {
+
                             v.stationName = Convert.ToString(sheetName);
+
                             if (j == getCellIndexByName(headerRow, "偏移地址"))
                             {
-                                v.varName = Convert.ToString(row.GetCell(j));
+                                // v.varName = Convert.ToString(row.GetCell(j));
                                 if (!(string.IsNullOrEmpty(v.varName) || string.IsNullOrWhiteSpace(v.varName)))
                                 {
                                     //Regex r = new Regex(@"(?i)(?<=\[)(.*)(?=\])");//中括号[]
@@ -122,10 +125,16 @@ namespace Ph_Mc_LiXinErFeng
                                     string temp = Convert.ToString(row.GetCell(j));
                                     v.varOffset = GetNumbersFromString(temp);
                                     //v.varOffset = Convert.ToInt32(row.GetCell(j));
-                                   
+
                                 }
 
                             }
+                            else if (j == getCellIndexByName(headerRow, "地址/标签"))
+                            {
+                                v.varName = Convert.ToString(row.GetCell(j));
+
+                            }
+
                             else if (j == getCellIndexByName(headerRow, "点位名"))
                             {
                                 v.varAnnotation = Convert.ToString(row.GetCell(j));
@@ -141,6 +150,10 @@ namespace Ph_Mc_LiXinErFeng
                                 string temp = Convert.ToString(row.GetCell(j));
                                 v.varMagnification = GetNumbersFromString(temp);
                             }
+                            else if (j == getCellIndexByName(headerRow, "所属工位号"))
+                            {
+                                v.StationNumber = Convert.ToInt32(row.GetCell(j).NumericCellValue);
+                            }
                         }
                     }
                 }
@@ -152,7 +165,7 @@ namespace Ph_Mc_LiXinErFeng
         }
 
         //从Excel中读取1秒的数据信息
-        public OneSecInfoStruct_MC[] ReadOneSecInfo_Excel(XSSFWorkbook xssWorkbook, string sheetName,bool isHexadecimal)
+        public OneSecInfoStruct_MC[] ReadOneSecInfo_Excel(XSSFWorkbook xssWorkbook, string sheetName, bool isHexadecimal)
         {
             DataTable dtTable = new DataTable();
             List<string> rowList = new List<string>();
@@ -279,7 +292,7 @@ namespace Ph_Mc_LiXinErFeng
                         //v.varOffset = Convert.ToDouble(row.GetCell(j));
 
                         //修改代码
-                        string temp = Convert.ToString(row.GetCell(j));                      
+                        string temp = Convert.ToString(row.GetCell(j));
                         v.varOffset = Convert.ToDouble(temp);
                     }
                     else if (j == getCellIndexByName(headerRow, "点位名"))
@@ -344,7 +357,7 @@ namespace Ph_Mc_LiXinErFeng
 
                 for (int j = row.FirstCellNum; j < cellCount; j++)
                 {
-                    if (j == getCellIndexByName(headerRow, "工位信号"))
+                    if (j == getCellIndexByName(headerRow, "工位序号"))
                     {
                         v.stationNumber = Convert.ToInt32(row.GetCell(j).NumericCellValue);
                     }
@@ -359,7 +372,7 @@ namespace Ph_Mc_LiXinErFeng
                         v.varName = temp;
 
                         //varOffset
-                        v.varOffset = GetNumbersFromString(temp); 
+                        v.varOffset = GetNumbersFromString(temp);
 
                         //varType
                         temp = Convert.ToString(headerRow.GetCell(j));
@@ -381,7 +394,7 @@ namespace Ph_Mc_LiXinErFeng
 
 
 
-       
+
 
         /// <summary>
         /// 文件是否被打开
@@ -500,7 +513,7 @@ namespace Ph_Mc_LiXinErFeng
                                 }
                                 else if (j == 5)
                                 {
-                                    v.iPort = Convert.ToInt32 (row.GetCell(j).NumericCellValue);//这里超出int16的范围  
+                                    v.iPort = Convert.ToInt32(row.GetCell(j).NumericCellValue);//这里超出int16的范围  
 
                                 }
                                 else if (j == 6)
@@ -523,7 +536,7 @@ namespace Ph_Mc_LiXinErFeng
 
 
         }
-         
+
 
         /// <summary>
         /// 根据首行单元格的值获取此单元格所在的列索引
@@ -550,7 +563,7 @@ namespace Ph_Mc_LiXinErFeng
 
             return result;
         }
-         
+
 
         /// <summary>
         /// 从字符串中获取数字
@@ -564,8 +577,8 @@ namespace Ph_Mc_LiXinErFeng
 
             //取出字符串中所有的数字   
             if (!string.IsNullOrEmpty(str) && !string.IsNullOrWhiteSpace(str))
-            { 
-                strNum = Regex.Replace(str, "[a-z]", "", RegexOptions.IgnoreCase); 
+            {
+                strNum = Regex.Replace(str, "[a-z]", "", RegexOptions.IgnoreCase);
             }
 
 
@@ -604,7 +617,7 @@ namespace Ph_Mc_LiXinErFeng
                 result = false;
 
             }
-           
+
 
             return result;
         }
@@ -647,7 +660,7 @@ namespace Ph_Mc_LiXinErFeng
                     {
                         if (i < values.Length)
                         {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i].str);
+                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i].StringValue);
                         }
                         else
                         {
@@ -829,6 +842,26 @@ namespace Ph_Mc_LiXinErFeng
 
                     }
                 }
+                if (value.GetType() == typeof(UInt32[]))
+                {
+                    UInt32[] values = (UInt32[])value;
+                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    {
+                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        {
+                            if (i < values.Length)
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
+                            }
+                            else
+                            {
+                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
+                            }
+
+                        }
+
+                    }
+                }
                 if (value.GetType() == typeof(Int64[]))
                 {
                     Int64[] values = (Int64[])value;
@@ -940,6 +973,6 @@ namespace Ph_Mc_LiXinErFeng
     }
 
 
-    
+
 
 }

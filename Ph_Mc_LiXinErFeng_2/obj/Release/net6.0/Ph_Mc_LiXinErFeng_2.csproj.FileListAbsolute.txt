@@ -66,3 +66,4 @@ D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\LiXinErFeng_MC_2\Ph_Mc_Li
 D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\LiXinErFeng_MC_2\Ph_Mc_LiXinErFeng_2\Ph_Mc_LiXinErFeng_2\obj\Release\net6.0\Ph_Mc_LiXinErFeng_2.pdb
 D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\LiXinErFeng_MC_2\Ph_Mc_LiXinErFeng_2\Ph_Mc_LiXinErFeng_2\obj\Release\net6.0\Ph_Mc_LiXinErFeng_2.genruntimeconfig.cache
 D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\LiXinErFeng_MC_2\Ph_Mc_LiXinErFeng_2\Ph_Mc_LiXinErFeng_2\obj\Release\net6.0\ref\Ph_Mc_LiXinErFeng_2.dll
+D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\LiXinErFeng_MC_2\Ph_Mc_LiXinErFeng_2\Ph_Mc_LiXinErFeng_2\obj\Release\net6.0\Ph_Mc_LiXinErFeng_2.sourcelink.json

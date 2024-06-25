@@ -35,24 +35,16 @@
   <Aliases>
 
     <!--DustingMachineCell-->
-	<Alias Alias="DeviceInfo">Arp.Plc.Eclr/G_arrxDeviceInfo_LXEF4</Alias>
-	<Alias Alias="1A1B">Arp.Plc.Eclr/G_arriStationOne_LXEF4</Alias>
-	<Alias Alias="2A2B">Arp.Plc.Eclr/G_arriStationTwo_LXEF4</Alias>
-	<Alias Alias="DM9400">Arp.Plc.Eclr/G_arriProductionDataValue_LXEF4</Alias>
-	<Alias Alias="DM9000">Arp.Plc.Eclr/G_arriLifeManagementNameValue_LXEF4</Alias>	  
-	<Alias Alias="MR8800">Arp.Plc.Eclr/G_arrxFunctionEnableValue_LXEF4</Alias>
-	<Alias Alias="DM8000">Arp.Plc.Eclr/G_arrxAlarmInfoValue_LXEF4</Alias>
-	<Alias Alias="OEE">Arp.Plc.Eclr/G_arrxOEEInfoValue_LXEF4</Alias>
 	  
-	<Alias Alias="FS_1">Arp.Plc.Eclr/G_udtFunctionEnableName_LXEF4</Alias>
-	<Alias Alias="PS_1">Arp.Plc.Eclr/G_udtProductionDataName_LXEF4</Alias>
-	<Alias Alias="LM_1">Arp.Plc.Eclr/G_udtLifeManagementName_LXEF4</Alias>
-	<Alias Alias="AS_1">Arp.Plc.Eclr/G_udtAlarmInfoName_LXEF4</Alias>
-	<Alias Alias="andon_yl">Arp.Plc.Eclr/G_udtOEEInfoName_LXEF4</Alias>
-	<Alias Alias="S_A1">Arp.Plc.Eclr/G_udt1A1BName_LXEF4</Alias>
-	<Alias Alias="S_B1">Arp.Plc.Eclr/G_udt2A2BName_LXEF4</Alias>
-	  
-	<Alias Alias="OverviewInfo">Arp.Plc.Eclr/G_udtOverviewInfo_LXEF4</Alias>
+
+	  <Alias Alias="OneSecNameStruct">Arp.Plc.Eclr/G_udtDeviceDataName_LXEF4</Alias>
+	  <Alias Alias="ProcessStationNameStruct">Arp.Plc.Eclr/G_udtProcessStationName_LXEF4</Alias>
+
+
+	  <Alias Alias="OverviewInfo">Arp.Plc.Eclr/G_udtDeviceInfo_LXEF4</Alias>
+	  <Alias Alias="OneSecDataValue">Arp.Plc.Eclr/G_udtOneSecDataValue_LXEF4</Alias>
+	  <Alias Alias="ProcessStationData">Arp.Plc.Eclr/G_udtProcessStationDataValue_LXEF4</Alias>
+	  <Alias Alias="StationListlnfo">Arp.Plc.Eclr/G_udtStationListInfo_LXEF4</Alias>
 	 
 
   </Aliases>

@@ -46,8 +46,8 @@ namespace Ph_Mc_LiXinErFeng
 
         #region 读取并发送设备信息
         //
-        // 4795 4794 4785的设备信息 最后一个点位不连续
-        public void ReadandSendDeviceInfo1(DeviceInfoConSturct_MC[] input, KeyenceMcNet mc, ref AllDataReadfromMC allDataReadfromMC, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        // 4795 4794 的设备信息 最后一个点位不连续
+        public void ReadandSendDeviceInfo1(DeviceInfoConSturct_MC[] input, KeyenceMcNet mc, ref AllDataReadfromMC allDataReadfromMC, ref UDT_StationListlnfo StationListlnfo, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
         {
             var ReadObject = input[0].varName;
             ushort length = (ushort)(input.Length - 1);
@@ -55,19 +55,28 @@ namespace Ph_Mc_LiXinErFeng
 
             var tempdata = new bool[input.Length];
 
-            OperateResult<bool[]> ret = mc.ReadBool(ReadObject, length);
-            OperateResult<bool> ret1 = mc.ReadBool(input[input.Length - 1].varName);
+            OperateResult<bool[]> ret = mc.ReadBool(ReadObject, length);  //读 MR8500 - MR8515 的数据
+            OperateResult<bool> ret1 = mc.ReadBool(input[input.Length - 1].varName);  //读 MR8610 
+            StationListlnfo.iDataCount = (short)input.Length;
 
             if (ret.IsSuccess && ret1.IsSuccess)
             {
                 Array.Copy(ret.Content, 0, tempdata, 0, ret.Content.Length);
-                tempdata[ret.Content.Length] = ret1.Content;
 
-                Array.Copy(tempdata, 0, allDataReadfromMC.DeviceInfoValue, 0, tempdata.Length);
+                for (int i = 0; i < input.Length - 1; i++)   //写入 MR8500 - MR8515 的数据
+                {
+                    StationListlnfo.arrDataPoint[input[i].stationNumber - 1].xCellMem = ret.Content[i];
+                }
+
+                tempdata[ret.Content.Length] = ret1.Content;
+                StationListlnfo.arrDataPoint[ret.Content.Length].xCellMem = ret1.Content;  //写入 MR8610 
+
+                Array.Copy(tempdata, 0, allDataReadfromMC.DeviceInfoValue, 0, tempdata.Length);  //写入暂存区（写入Excel的采集值）
+
 
                 try
                 {
-                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["DeviceInfo"], Arp.Type.Grpc.CoreType.CtArray, tempdata));
+                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["StationListlnfo"], Arp.Type.Grpc.CoreType.CtStruct, StationListlnfo));
                     var writeItemsArray = listWriteItem.ToArray();
                     var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
                     bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
@@ -86,21 +95,28 @@ namespace Ph_Mc_LiXinErFeng
             }
         }
 
-        public void ReadandSendDeviceInfo2(DeviceInfoConSturct_MC[] input, KeyenceMcNet mc, ref AllDataReadfromMC allDataReadfromMC, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        // 4752 的设备信息 点位连续
+        public void ReadandSendDeviceInfo2(DeviceInfoConSturct_MC[] input, KeyenceMcNet mc, ref AllDataReadfromMC allDataReadfromMC, ref UDT_StationListlnfo StationListlnfo, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
         {
             var ReadObject = input[0].varName;
             ushort length = (ushort)input.Length;
             var listWriteItem = new List<WriteItem>();
+            StationListlnfo.iDataCount = (short)input.Length;
 
             OperateResult<bool[]> ret = mc.ReadBool(ReadObject, length);
 
             if (ret.IsSuccess)
             {
-                Array.Copy(ret.Content, 0, allDataReadfromMC.DeviceInfoValue, 0, ret.Content.Length);
+                Array.Copy(ret.Content, 0, allDataReadfromMC.DeviceInfoValue, 0, ret.Content.Length);  //写入暂存区（写入Excel的采集值）
+
+                for (int i = 0; i < input.Length; i++)   //写入 MR8500 - MR8600 的数据
+                {
+                    StationListlnfo.arrDataPoint[input[i].stationNumber - 1].xCellMem = ret.Content[i];
+                }
 
                 try
                 {
-                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["DeviceInfo"], Arp.Type.Grpc.CoreType.CtArray, ret.Content));
+                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["StationListlnfo"], Arp.Type.Grpc.CoreType.CtStruct, StationListlnfo));
                     var writeItemsArray = listWriteItem.ToArray();
                     var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
                     bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
@@ -119,50 +135,369 @@ namespace Ph_Mc_LiXinErFeng
             }
         }
 
+
         #endregion
 
-        //从大数组中取数，并发送工位数据
-        public void SendStationData(StationInfoStruct_MC[] input, short[] EMArray, ref AllDataReadfromMC allDataReadfromMC, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        //从三个大数组中取数，并发送工位数据
+
+        public void WriteStationData(StationInfoStruct_MC[] input, short[] EMArray, short[] DMArray, bool[] MRArray,  ref AllDataReadfromMC allDataReadfromMC, ref UDT_ProcessStationDataValue ProcessStationDataValue)
         {
-          
-            float[] senddata = new float[input.Length];
-            string StationName_Now = CN2EN(input[0].stationName);
-            var listWriteItem = new List<WriteItem>();
-
-
-            for (int i = 0; i < input.Length; i++)
+            var index = 0;
+            var j = 0;  // 加工工位采集值的索引
+            double temp = 0;
+            // 根据所属工位号，判断数组索引
+            switch (input[0].stationName)
             {
-                var index = input[i].varOffset - 5057; //硬编码，开始地址就是5057
-                senddata[i] = (float)(EMArray[index] / Math.Pow(10, input[i].varMagnification));
-            }
+                case "加工工位(1A)":
+                    {
+                        j = 0;
 
-            //写入缓存区
-            if (input[0].stationName == "加工工位(1A1B)")
+                        ProcessStationDataValue.arrDataPoint[j].iDataCount = (short)input.Length;
+
+                        for (int i = 0; i < input.Length; i++)
+                        {
+                            if (input[i].varName.Substring(0, 2) == "EM")
+                            {
+                                index = input[i].varOffset - 5057;
+                                temp = EMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();   // 写入 加工工位采集值结构体 
+                                allDataReadfromMC.Station1AInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "DM")
+                            {
+                                index = input[i].varOffset - 9500;
+                                temp = DMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station1AInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "MR")
+                            {
+                                index = CalculateIndex_H(6008, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = MRArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station1AInfoValue[i] = MRArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+                           
+                        }
+
+                    }
+                    break;
+
+                case "加工工位(1B)":
+                    {
+                        j = 1;
+
+                        ProcessStationDataValue.arrDataPoint[j].iDataCount = (short)input.Length;
+
+                        for (int i = 0; i < input.Length; i++)
+                        {
+                            if (input[i].varName.Substring(0, 2) == "EM")
+                            {
+
+                                index = input[i].varOffset - 5057;
+                                temp = EMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();   // 写入 加工工位采集值结构体 
+                                allDataReadfromMC.Station1BInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "DM")
+                            {
+                                index = input[i].varOffset - 9500;
+                                temp = DMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station1BInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "MR")
+                            {
+                                index = CalculateIndex_H(6008, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = MRArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station1BInfoValue[i] = MRArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+
+                        }
+
+
+                    }
+                    break;
+
+                case "加工工位(2A)":
+                    {
+                        j = 2;
+
+                        ProcessStationDataValue.arrDataPoint[j].iDataCount = (short)input.Length;
+
+                        for (int i = 0; i < input.Length; i++)
+                        {
+                            if (input[i].varName.Substring(0, 2) == "EM")
+                            {
+                                index = input[i].varOffset - 5057;
+                                temp = EMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();   // 写入 加工工位采集值结构体 
+                                allDataReadfromMC.Station2AInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "DM")
+                            {
+                                index = input[i].varOffset - 9500;
+                                temp = DMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station2AInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "MR")
+                            {
+                                index = CalculateIndex_H(6008, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = MRArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station2AInfoValue[i] = MRArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+
+                          
+
+
+                        }
+
+
+                    }
+                    break;
+
+                case "加工工位(2B)":
+                    {
+                        j = 3;
+
+                        ProcessStationDataValue.arrDataPoint[j].iDataCount = (short)input.Length;
+
+                        for (int i = 0; i < input.Length; i++)
+                        {
+                            if (input[i].varName.Substring(0, 2) == "EM")
+                            {
+
+                                index = input[i].varOffset - 5057;
+                                temp = EMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();   // 写入 加工工位采集值结构体 
+                                allDataReadfromMC.Station2BInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "DM")
+                            {
+                                index = input[i].varOffset - 9500;
+                                temp = DMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station2BInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "MR")
+                            {
+                                index = CalculateIndex_H(6008, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = MRArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station2BInfoValue[i] = MRArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+
+                           
+
+
+                        }
+
+
+                    }
+                    break;
+
+                default:
+                    break;
+
+            }
+        }
+
+        public void WriteStationData(StationInfoStruct_MC[] input, short[] EMArray, short[] DMArray, bool[] MRArray, bool[] RArray, ref AllDataReadfromMC allDataReadfromMC, ref UDT_ProcessStationDataValue ProcessStationDataValue)
+        {
+            var index = 0;
+            var j = 0;  // 加工工位采集值的索引
+            double temp = 0;
+            // 根据所属工位号，判断数组索引
+            switch (input[0].stationName)
             {
-                Array.Copy(senddata, 0, allDataReadfromMC.Station1A1BInfoValue, 0, senddata.Length);
+                case "加工工位(1A)":
+                    {
+                        j = 0;
+
+                        ProcessStationDataValue.arrDataPoint[j].iDataCount = (short)input.Length;
+
+                        for (int i = 0; i < input.Length; i++)
+                        {
+                            if (input[i].varName.Substring(0, 2) == "EM")
+                            {
+                                index = input[i].varOffset - 5057;
+                                temp = EMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();   // 写入 加工工位采集值结构体 
+                                allDataReadfromMC.Station1AInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "DM")
+                            {
+                                index = input[i].varOffset - 9500;
+                                temp = DMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station1AInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "MR")
+                            {
+                                index = CalculateIndex_H(6008, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = MRArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station1AInfoValue[i] = MRArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "R7")  //设备4752独有的
+                            {
+                                index = CalculateIndex_H(79003, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = RArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station1AInfoValue[i] = RArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+                        }
+
+                    }
+                    break;
+
+                case "加工工位(1B)":
+                    {
+                        j = 1;
+
+                        ProcessStationDataValue.arrDataPoint[j].iDataCount = (short)input.Length;
+
+                        for (int i = 0; i < input.Length; i++)
+                        {
+                            if (input[i].varName.Substring(0, 2) == "EM")
+                            {
+
+                                index = input[i].varOffset - 5057;
+                                temp = EMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();   // 写入 加工工位采集值结构体 
+                                allDataReadfromMC.Station1BInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "DM")
+                            {
+                                index = input[i].varOffset - 9500;
+                                temp = DMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station1BInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "MR")
+                            {
+                                index = CalculateIndex_H(6008, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = MRArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station1BInfoValue[i] = MRArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+
+                            else if (input[i].varName.Substring(0, 2) == "R7")  //设备4752独有的
+                            {
+                                index = CalculateIndex_H(79003, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = RArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station1BInfoValue[i] = RArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+                        }
+
+
+                    }
+                    break;
+
+                case "加工工位(2A)":
+                    {
+                        j = 2;
+
+                        ProcessStationDataValue.arrDataPoint[j].iDataCount = (short)input.Length;
+
+                        for (int i = 0; i < input.Length; i++)
+                        {
+                            if (input[i].varName.Substring(0, 2) == "EM")
+                            {
+
+                                index = input[i].varOffset - 5057;
+                                temp = EMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();   // 写入 加工工位采集值结构体 
+                                allDataReadfromMC.Station2AInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "DM")
+                            {
+                                index = input[i].varOffset - 9500;
+                                temp = DMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station2AInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "MR")
+                            {
+                                index = CalculateIndex_H(6008, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = MRArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station2AInfoValue[i] = MRArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+
+                            else if (input[i].varName.Substring(0, 2) == "R7")  //设备4752独有的
+                            {
+                                index = CalculateIndex_H(79003, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = RArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station2AInfoValue[i] = RArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+
+
+                        }
+
+
+                    }
+                    break;
+
+                case "加工工位(2B)":
+                    {
+                        j = 3;
+
+                        ProcessStationDataValue.arrDataPoint[j].iDataCount = (short)input.Length;
+
+                        for (int i = 0; i < input.Length; i++)
+                        {
+                            if (input[i].varName.Substring(0, 2) == "EM")
+                            {
+
+                                index = input[i].varOffset - 5057;
+                                temp = EMArray[index] / Math.Pow(10, input[i].varMagnification);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = temp.ToString();   // 写入 加工工位采集值结构体 
+                                allDataReadfromMC.Station2BInfoValue[i] = temp.ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "DM")
+                            {
+                                index = input[i].varOffset - 9500;
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = DMArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station2BInfoValue[i] = DMArray[index].ToString();    // 写入数据暂存区（Excel）
+
+                            }
+                            else if (input[i].varName.Substring(0, 2) == "MR")
+                            {
+                                index = CalculateIndex_H(6008, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = MRArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station2BInfoValue[i] = MRArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+
+                            else if (input[i].varName.Substring(0, 2) == "R7")  //设备4752独有的
+                            {
+                                index = CalculateIndex_H(79003, input[i].varOffset);
+                                ProcessStationDataValue.arrDataPoint[j].arrDataPoint[i].StringValue = RArray[index].ToString();    // 写入 加工工位采集值结构体
+                                allDataReadfromMC.Station2BInfoValue[i] = RArray[index].ToString();    // 写入数据暂存区（Excel）
+                            }
+
+
+                        }
+
+
+                    }
+                    break;
+
+                default:
+                    break;
 
             }
-            else
-            {
-                Array.Copy(senddata, 0, allDataReadfromMC.Station2A2BInfoValue, 0, senddata.Length);
-
-            }
-
-
-            try
-            {
-                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary[StationName_Now], Arp.Type.Grpc.CoreType.CtArray, senddata));
-                var writeItemsArray = listWriteItem.ToArray();
-                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
-
-            }
-            catch (Exception e)
-            {
-                logNet.WriteError("[Grpc]", StationName_Now + " 数据发送失败：" + e);
-
-            }
-
         }
 
 
@@ -190,7 +525,7 @@ namespace Ph_Mc_LiXinErFeng
 
 
         //读取并发送 功能开关、生产统计数据 
-        public void ReadandSendConOneSecData(OneSecInfoStruct_MC[] input, KeyenceMcNet mc, ref AllDataReadfromMC allDataReadfromMC, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        public void ReadConOneSecData(OneSecInfoStruct_MC[] input, KeyenceMcNet mc, ref AllDataReadfromMC allDataReadfromMC, ref DeviceDataStruct_IEC DeviceDataStruct)
         {
             var ReadObject = input[0].varName;
             ushort length = (ushort)input.Length;
@@ -205,21 +540,9 @@ namespace Ph_Mc_LiXinErFeng
 
                     Array.Copy(ret.Content, 0, allDataReadfromMC.FunctionEnableValue, 0, ret.Content.Length);  //写入缓存区
 
-                    try
-                    {
-                        listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary[ReadObject], Arp.Type.Grpc.CoreType.CtArray, ret.Content));
-                        var writeItemsArray = listWriteItem.ToArray();
-                        var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                        bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
-
-                    }
-                    catch (Exception e)
-                    {
-
-                        logNet.WriteError("[Grpc]", ReadObject + " 数据发送失败：" + e);
+                    Array.Copy(ret.Content, 0, DeviceDataStruct.Value_FE, 0, input.Length);  //写入 DeviceDataStruct 结构体
 
 
-                    }
                 }
                 else
                 {
@@ -235,20 +558,8 @@ namespace Ph_Mc_LiXinErFeng
                 if (ret.IsSuccess)
                 {
                     Array.Copy(ret.Content, 0, allDataReadfromMC.ProductionDataValue, 0, ret.Content.Length);  //写入缓存区
+                    Array.Copy(ret.Content, 0, DeviceDataStruct.Value_PD, 0, ret.Content.Length); //写入 DeviceDataStruct 结构体
 
-                    try
-                    {
-                        listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary[ReadObject], Arp.Type.Grpc.CoreType.CtArray, ret.Content));
-                        var writeItemsArray = listWriteItem.ToArray();
-                        var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                        bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
-
-                    }
-                    catch (Exception e)
-                    {
-                        logNet.WriteError("[Grpc]", ReadObject + " 数据发送失败：" + e);
-
-                    }
                 }
                 else
                 {
@@ -259,9 +570,9 @@ namespace Ph_Mc_LiXinErFeng
         }
 
         //读取并发送 寿命管理数据  (需要根据地址筛选）
-        public void ReadandSendDisOneSecData(OneSecInfoStruct_MC[] input, KeyenceMcNet mc, ref AllDataReadfromMC allDataReadfromMC, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        public void ReadDisOneSecData(OneSecInfoStruct_MC[] input, KeyenceMcNet mc, ref AllDataReadfromMC allDataReadfromMC, ref DeviceDataStruct_IEC DeviceDataStruct)
         {
-            ushort[] senddata = new ushort[input.Length];
+            //uint[] senddata = new uint[input.Length];
             var ReadObject = input[0].varName;
             ushort length = (ushort)(input[input.Length - 1].varOffset - input[0].varOffset + 1);
             var listWriteItem = new List<WriteItem>();
@@ -273,24 +584,15 @@ namespace Ph_Mc_LiXinErFeng
                 for (int i = 0; i < input.Length; i++)
                 {
                     var index = input[i].varOffset - input[0].varOffset;
-                    senddata[i] = ret.Content[index];
-                }
-
-                Array.Copy(senddata, 0, allDataReadfromMC.LifeManagementValue, 0, senddata.Length);  //写入缓存区
-
-                try
-                {
-                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary[ReadObject], Arp.Type.Grpc.CoreType.CtArray, senddata));
-                    var writeItemsArray = listWriteItem.ToArray();
-                    var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                    bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+                    //senddata[i] = (uint)ret.Content[index];
+                    allDataReadfromMC.LifeManagementValue[i] = ret.Content[index];  //写入缓存区
+                    DeviceDataStruct.Value_LM[i] = ret.Content[index];//写入 DeviceDataStruct 结构体
 
                 }
-                catch (Exception e)
-                {
-                    logNet.WriteError("[Grpc]", ReadObject + " 数据发送失败：" + e);
 
-                }
+                //Array.Copy(senddata, 0, allDataReadfromMC.LifeManagementValue, 0, senddata.Length);  //写入缓存区
+                //Array.Copy(senddata, 0, DeviceDataStruct.Value_LM, 0, senddata.Length); //写入 DeviceDataStruct 结构体
+
             }
             else
             {
@@ -301,12 +603,11 @@ namespace Ph_Mc_LiXinErFeng
         }
 
         //读取并发送报警数据
-        public void ReadandSendAlarmData(OneSecAlarmStruct_MC[] input, KeyenceMcNet mc, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        public void ReadAlarmData(OneSecAlarmStruct_MC[] input, KeyenceMcNet mc, ref DeviceDataStruct_IEC DeviceDataStruct)
         {
             var ReadObject = input[0].varName.Replace(".0", "");
             ushort length = 38; //硬编码 从DM8000-DM8037 
-            bool[] senddata = new bool[length * 16];
-            var listWriteItem = new List<WriteItem>();
+
             bool temp;
 
             OperateResult<byte[]> ret = mc.Read(ReadObject, length);
@@ -315,23 +616,12 @@ namespace Ph_Mc_LiXinErFeng
             {
                 for (int i = 0; i < 38 * 16; i++)
                 {
-                    temp = mc.ByteTransform.TransBool(ret.Content, 0 + i);   // 每个bool 一个字节                 
-                    senddata[i] = temp;
+                    temp = mc.ByteTransform.TransBool(ret.Content, 0 + i);   // 每个bool 一个字节
+                    DeviceDataStruct.Value_ALM[i] = temp;          //写入 DeviceDataStruct 结构体
+                    //senddata[i] = temp;
                 }
 
-                try
-                {
-                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary[ReadObject], Arp.Type.Grpc.CoreType.CtArray, senddata));
-                    var writeItemsArray = listWriteItem.ToArray();
-                    var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                    bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
 
-                }
-                catch (Exception e)
-                {
-                    logNet.WriteError("[Grpc]", ReadObject + " 数据发送失败：" + e);
-
-                }
             }
             else
             {
@@ -343,134 +633,92 @@ namespace Ph_Mc_LiXinErFeng
 
 
         #region 读取并发送点位名
-        public void ReadandSendPointName(OneSecInfoStruct_MC[] InputStruct, OneSecPointNameStruct_IEC functionEnableNameStruct_IEC, int IEC_Array_Number, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        // 读取 功能开关、寿命管理、生产统计的点位名
+        public void ReadPointName(OneSecInfoStruct_MC[] InputStruct, ref OneSecPointNameStruct_IEC OneSecNameStruct)
         {
-            functionEnableNameStruct_IEC.iDataCount = InputStruct.Length;
-            functionEnableNameStruct_IEC.stringArrData = new stringStruct[IEC_Array_Number];
-            var listWriteItem = new List<WriteItem>();
+            switch (InputStruct[0].varName)
+            {
+                case "MR8800":             // 功能开关
+                    {
+                        OneSecNameStruct.DataCount_FE = InputStruct.Length;
+                        for (int i = 0; i < InputStruct.Length; i++)
+                        {
+                            OneSecNameStruct.Name_FE[i].StringValue = InputStruct[i].varAnnotation;
+                        }
+                    }
+                    break;
 
-            for (int i = 0; i < IEC_Array_Number; i++)
-            {
-                if (i < InputStruct.Length)
-                {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = InputStruct[i].varAnnotation;
-                }
-                else
-                {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = " ";
-                }
-            }
-            try
-            {
-                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(InputStruct[0].varAnnotation), Arp.Type.Grpc.CoreType.CtStruct, functionEnableNameStruct_IEC));
-                var writeItemsArray = listWriteItem.ToArray();
-                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+                case "DM9400":  // 生产统计
+                    {
+                        OneSecNameStruct.DataCount_PD = InputStruct.Length;
+                        for (int i = 0; i < InputStruct.Length; i++)
+                        {
+                            OneSecNameStruct.Name_PD[i].StringValue = InputStruct[i].varAnnotation;
+                        }
+                    }
+                    break;
 
-            }
-            catch (Exception e)
-            {
-                logNet.WriteError("[Grpc]", InputStruct[0].varAnnotation + " 点位名发送失败：" + e);
+                case "DM9000":  // 寿命管理
+                    {
+                        OneSecNameStruct.DataCount_LM = InputStruct.Length;
+                        for (int i = 0; i < InputStruct.Length; i++)
+                        {
+                            OneSecNameStruct.Name_LM[i].StringValue = InputStruct[i].varAnnotation;
+                        }
+                    }
+                    break;
+
+                default:
+                    break;
             }
 
         }
 
-        public void ReadandSendPointName(OneSecAlarmStruct_MC[] InputStruct, OneSecPointNameStruct_IEC functionEnableNameStruct_IEC, int IEC_Array_Number, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        //读报警信息的点位名
+        public void ReadPointName(OneSecAlarmStruct_MC[] InputStruct, ref OneSecPointNameStruct_IEC OneSecNameStruct)
         {
-            functionEnableNameStruct_IEC.iDataCount = InputStruct.Length;
-            functionEnableNameStruct_IEC.stringArrData = new stringStruct[IEC_Array_Number];
-            var listWriteItem = new List<WriteItem>();
-
-            for (int i = 0; i < IEC_Array_Number; i++)
+            OneSecNameStruct.DataCount_ALM = InputStruct.Length;
+            for (int i = 0; i < InputStruct.Length; i++)
             {
-                if (i < InputStruct.Length)
-                {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = InputStruct[i].varAnnotation;
-                }
-                else
-                {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = " ";
-                }
+                OneSecNameStruct.Name_ALM[i].StringValue = InputStruct[i].varAnnotation;
             }
-            try
-            {
-                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(InputStruct[0].varAnnotation), Arp.Type.Grpc.CoreType.CtStruct, functionEnableNameStruct_IEC));
-                var writeItemsArray = listWriteItem.ToArray();
-                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
-
-            }
-            catch (Exception e)
-            {
-                logNet.WriteError("[Grpc]", InputStruct[0].varAnnotation + " 点位名发送失败：" + e);
-            }
-
         }
 
-        public void ReadandSendPointName(StationInfoStruct_MC[] InputStruct, OneSecPointNameStruct_IEC functionEnableNameStruct_IEC, int IEC_Array_Number, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        //读OEE的点位名
+        public void ReadPointName(List<OneSecInfoStruct_MC[]> OEEGroups, int stringnumber, ref OneSecPointNameStruct_IEC OneSecNameStruct)
         {
-            functionEnableNameStruct_IEC.iDataCount = InputStruct.Length;
-            functionEnableNameStruct_IEC.stringArrData = new stringStruct[IEC_Array_Number];
-            var listWriteItem = new List<WriteItem>();
-
-            for (int i = 0; i < IEC_Array_Number; i++)
+            var index = 0;
+            OneSecNameStruct.DataCount_OEE = stringnumber;
+            foreach (var OEEGroup in OEEGroups)
             {
-                if (i < InputStruct.Length)
+                foreach (var OEE in OEEGroup)
                 {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = InputStruct[i].varAnnotation;
-                }
-                else
-                {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = " ";
+                    OneSecNameStruct.Name_OEE[index++].StringValue = OEE.varAnnotation;
                 }
             }
-            try
-            {
-                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(InputStruct[0].varAnnotation), Arp.Type.Grpc.CoreType.CtStruct, functionEnableNameStruct_IEC));
-                var writeItemsArray = listWriteItem.ToArray();
-                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
-
-            }
-            catch (Exception e)
-            {
-                logNet.WriteError("[Grpc]", InputStruct[0].varAnnotation + " 点位名发送失败：" + e);
-            }
-
         }
 
-        public void ReadandSendPointName(String[] InputString, OneSecPointNameStruct_IEC functionEnableNameStruct_IEC, int IEC_Array_Number, GrpcTool grpcToolInstance, Dictionary<string, string> nodeidDictionary, IDataAccessServiceClient grpcDataAccessServiceClient, CallOptions options1)
+        //读加工工位点位名
+        public void ReadPointName(List<StationInfoStruct_MC[]> StationDataStruct, ref ProcessStationNameStruct_IEC ProcessStationNameStruct)
         {
-            var listWriteItem = new List<WriteItem>();
-            WriteItem[] writeItems = new WriteItem[] { };
-            functionEnableNameStruct_IEC.iDataCount = InputString.Length;
-            functionEnableNameStruct_IEC.stringArrData = new stringStruct[IEC_Array_Number];
-            for (int i = 0; i < IEC_Array_Number; i++)
-            {
-                if (i < InputString.Length)
-                {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = InputString[i];
-                }
-                else
-                {
-                    functionEnableNameStruct_IEC.stringArrData[i].str = " ";
-                }
-            }
-            try
-            {
-                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary.GetValueOrDefault(InputString[0]), Arp.Type.Grpc.CoreType.CtStruct, functionEnableNameStruct_IEC));
-                var writeItemsArray = listWriteItem.ToArray();
-                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+            ProcessStationNameStruct.StationCount = (short)StationDataStruct.Count;   //写入加工工位的个数
 
-            }
-            catch (Exception e)
-            {
-                logNet.WriteError("[Grpc]", InputString[0] + " 点位名发送失败：" + e);
-            }
+            var i = 0;  //工位数量的索引
 
+            foreach (var StationData in StationDataStruct)
+            {
+                ProcessStationNameStruct.UnitStation[i].DataCount = (short)StationData.Length;   //每个加工工位的点位数量 （不超过16个点位）
+                ProcessStationNameStruct.UnitStation[i].StationNO = (short)StationData[0].StationNumber;
+                ProcessStationNameStruct.UnitStation[i].StationName = StationData[0].stationName;
+                var j = 0;  //每个工位里采集值的索引
+                foreach (var item in StationData)
+                {
+                    ProcessStationNameStruct.UnitStation[i].arrKey[j].StringValue = item.varAnnotation;
+                    j++;
+                }
+                i++;
+            }
         }
-
         #endregion
 
 
