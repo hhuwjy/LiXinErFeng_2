@@ -3,12 +3,20 @@
   "WorkspaceRootPath": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\lixinerfeng_mc_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|solutionrelative:ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\lixinerfeng_mc_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2\\keyencecomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|solutionrelative:ph_mc_lixinerfeng_2\\keyencecomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\lixinerfeng_mc_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|solutionrelative:ph_mc_lixinerfeng_2\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\lixinerfeng_mc_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2\\readfromexcel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|solutionrelative:ph_mc_lixinerfeng_2\\readfromexcel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\lixinerfeng_mc_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|solutionrelative:ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\lixinerfeng_mc_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2\\grpcsubscribenodes\\grpcsubscribenodes_4794.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
@@ -19,20 +27,12 @@
       "RelativeMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|solutionrelative:ph_mc_lixinerfeng_2\\grpcsubscribenodes\\grpcsubscribenodes_4752.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\lixinerfeng_mc_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|solutionrelative:ph_mc_lixinerfeng_2\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\lixinerfeng_mc_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2\\userstruct.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|solutionrelative:ph_mc_lixinerfeng_2\\userstruct.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\lixinerfeng_mc_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2\\protobuf\\arptypes.proto||{3B902123-F8A7-4915-9F01-361F908088D0}",
       "RelativeMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|solutionrelative:ph_mc_lixinerfeng_2\\protobuf\\arptypes.proto||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\lixinerfeng_mc_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2\\readfromexcel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|solutionrelative:ph_mc_lixinerfeng_2\\readfromexcel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{1562CA8E-91B0-4B49-BF6A-E680BB70388D}|Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj|d:\\2024\\work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\readfromstructarray\\lixinerfeng_mc_2\\ph_mc_lixinerfeng_2\\ph_mc_lixinerfeng_2\\grpccomm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -46,11 +46,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "ArpTypes.proto",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2\\Protobuf\\ArpTypes.proto",
               "RelativeDocumentMoniker": "Ph_Mc_LiXinErFeng_2\\Protobuf\\ArpTypes.proto",
@@ -58,12 +58,11 @@
               "RelativeToolTip": "Ph_Mc_LiXinErFeng_2\\Protobuf\\ArpTypes.proto",
               "ViewState": "AQIAAFkAAAAAAAAAAAAAAFkAAAAdAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003853|",
-              "WhenOpened": "2024-06-24T06:48:06.515Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-24T06:48:06.515Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "GrpcSubscribeNodes_4752.xml",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2\\GrpcSubscribeNodes\\GrpcSubscribeNodes_4752.xml",
               "RelativeDocumentMoniker": "Ph_Mc_LiXinErFeng_2\\GrpcSubscribeNodes\\GrpcSubscribeNodes_4752.xml",
@@ -71,12 +70,11 @@
               "RelativeToolTip": "Ph_Mc_LiXinErFeng_2\\GrpcSubscribeNodes\\GrpcSubscribeNodes_4752.xml",
               "ViewState": "AQIAABsAAAAAAAAAAADwvzAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
-              "WhenOpened": "2024-06-24T01:16:16.738Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-24T01:16:16.738Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "UserStruct.cs",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2\\UserStruct.cs",
               "RelativeDocumentMoniker": "Ph_Mc_LiXinErFeng_2\\UserStruct.cs",
@@ -84,25 +82,24 @@
               "RelativeToolTip": "Ph_Mc_LiXinErFeng_2\\UserStruct.cs",
               "ViewState": "AQIAAH0CAAAAAAAAAAAhwI8CAAAtAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-13T06:15:45.556Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-13T06:15:45.556Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "KeyenceComm.cs",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2\\KeyenceComm.cs",
               "RelativeDocumentMoniker": "Ph_Mc_LiXinErFeng_2\\KeyenceComm.cs",
               "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2\\KeyenceComm.cs",
               "RelativeToolTip": "Ph_Mc_LiXinErFeng_2\\KeyenceComm.cs",
-              "ViewState": "AQIAALgAAAAAAAAAAAArwAoCAAANAAAA",
+              "ViewState": "AQIAAHsCAAAAAAAAAAAAwGgCAAAxAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-13T06:15:08.793Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "GrpcSubscribeNodes_4794.xml",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2\\GrpcSubscribeNodes\\GrpcSubscribeNodes_4794.xml",
               "RelativeDocumentMoniker": "Ph_Mc_LiXinErFeng_2\\GrpcSubscribeNodes\\GrpcSubscribeNodes_4794.xml",
@@ -110,31 +107,30 @@
               "RelativeToolTip": "Ph_Mc_LiXinErFeng_2\\GrpcSubscribeNodes\\GrpcSubscribeNodes_4794.xml",
               "ViewState": "AQIAAB4AAAAAAAAAAADwvy0AAABRAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
-              "WhenOpened": "2024-06-13T03:42:00.744Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-13T03:42:00.744Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2\\Program.cs",
               "RelativeDocumentMoniker": "Ph_Mc_LiXinErFeng_2\\Program.cs",
               "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2\\Program.cs",
               "RelativeToolTip": "Ph_Mc_LiXinErFeng_2\\Program.cs",
-              "ViewState": "AQIAAJADAAAAAAAAAAAAAJUDAABHAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACYFAABQAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-13T03:34:21.638Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 2,
               "Title": "ReadFromExcel.cs",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2\\ReadFromExcel.cs",
               "RelativeDocumentMoniker": "Ph_Mc_LiXinErFeng_2\\ReadFromExcel.cs",
               "ToolTip": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2\\ReadFromExcel.cs",
               "RelativeToolTip": "Ph_Mc_LiXinErFeng_2\\ReadFromExcel.cs",
-              "ViewState": "AQIAAAkCAAAAAAAAAAAQwCsCAAAsAAAA",
+              "ViewState": "AQIAAIQAAAAAAAAAAAAQwCgDAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-13T05:31:47.927Z",
               "EditorCaption": ""
@@ -149,12 +145,11 @@
               "RelativeToolTip": "Ph_Mc_LiXinErFeng_2\\GrpcComm.cs",
               "ViewState": "AQIAADYBAAAAAAAAAAAAAEQBAAA1AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-13T06:33:53.484Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-13T06:33:53.484Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "Ph_Mc_LiXinErFeng_2.csproj",
               "DocumentMoniker": "D:\\2024\\Work\\12-\u51A0\u5B87\u6570\u91C7\u9879\u76EE\\ReadFromStructArray\\LiXinErFeng_MC_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj",
               "RelativeDocumentMoniker": "Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj",
@@ -162,8 +157,7 @@
               "RelativeToolTip": "Ph_Mc_LiXinErFeng_2\\Ph_Mc_LiXinErFeng_2.csproj",
               "ViewState": "AQIAAA8AAAAAAAAAAAAAABkAAAA3AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-06-13T03:37:22.418Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-13T03:37:22.418Z"
             }
           ]
         }

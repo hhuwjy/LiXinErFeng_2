@@ -625,13 +625,12 @@ namespace Ph_Mc_LiXinErFeng
 
 
 
-
         /// <summary>
         /// 往Excel指定列写数据
         /// </summary>
         /// <param name="ExcelPath">excel文件路径</param>
         /// <param name="sheetname">Excel sheet名字</param>
-        /// <param name="columnName">要写入列的名称（从0开始）</param>
+        /// <param name="columnName">要写入列的名称</param>
         /// <param name="value">写入的数据（数组）</param>
         /// <returns></returns>
         public bool setExcelCellValue(String ExcelPath, String sheetname, string columnName, object value)
@@ -656,290 +655,134 @@ namespace Ph_Mc_LiXinErFeng
                 if (value.GetType() == typeof(stringStruct[]))
                 {
                     stringStruct[] values = (stringStruct[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        if (i < values.Length)
+                        if (i < sheet.LastRowNum && sheet.GetRow(i + 1) != null)
                         {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i].StringValue);
-                        }
-                        else
-                        {
-                            sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                        }
+                            sheet.GetRow(i + 1).CreateCell(column).SetCellValue(values[i].StringValue);
 
+                        }
                     }
                 }
                 if (value.GetType() == typeof(string[]))
                 {
                     string[] values = (string[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+
+                        if (i < sheet.LastRowNum && sheet.GetRow(i + 1) != null)
                         {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i]);
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
+                            sheet.GetRow(i + 1).CreateCell(column).SetCellValue(values[i]);
 
                         }
-
-
                     }
                 }
-                if (value.GetType() == typeof(StringBuilder[]))
-                {
-                    StringBuilder[] values = (StringBuilder[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
-                    {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
-                        {
-                            if (i < values.Length)
-                            {
-                                if (values[i] != null)
-                                {
-                                    sheet.GetRow(i + 1).GetCell(column).SetCellValue(values[i].ToString());
-                                }
-                                else
-                                {
-                                    sheet.GetRow(i + 1).GetCell(column).SetCellValue("");
-                                }
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
-
-                        }
-
-
-                    }
-                }
-
-
                 if (value.GetType() == typeof(bool[]))
                 {
                     bool[] values = (bool[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        if (i < sheet.LastRowNum && sheet.GetRow(i + 1) != null)
                         {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
+                            sheet.GetRow(i + 1).CreateCell(column).SetCellValue(Convert.ToString(values[i]));
 
                         }
-
                     }
                 }
                 if (value.GetType() == typeof(float[]))
                 {
                     float[] values = (float[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        if (i < sheet.LastRowNum && sheet.GetRow(i + 1) != null)
                         {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
+                            sheet.GetRow(i + 1).CreateCell(column).SetCellValue(Convert.ToString(values[i]));
 
                         }
-
                     }
                 }
                 if (value.GetType() == typeof(int[]))
                 {
                     int[] values = (int[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        if (i < sheet.LastRowNum && sheet.GetRow(i + 1) != null)
                         {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
+                            sheet.GetRow(i + 1).CreateCell(column).SetCellValue(Convert.ToString(values[i]));
 
                         }
-
                     }
                 }
                 if (value.GetType() == typeof(Int16[]))
                 {
                     Int16[] values = (Int16[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        if (i < sheet.LastRowNum && sheet.GetRow(i + 1) != null)
                         {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
+                            sheet.GetRow(i + 1).CreateCell(column).SetCellValue(Convert.ToString(values[i]));
 
                         }
-
                     }
                 }
-
-                if (value.GetType() == typeof(UInt16[]))
-                {
-                    UInt16[] values = (UInt16[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
-                    {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
-                        {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
-
-                        }
-
-                    }
-                }
-
                 if (value.GetType() == typeof(Int32[]))
                 {
                     Int32[] values = (Int32[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        if (i < sheet.LastRowNum && sheet.GetRow(i + 1) != null)
                         {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
+                            sheet.GetRow(i + 1).CreateCell(column).SetCellValue(Convert.ToString(values[i]));
 
                         }
-
-                    }
-                }
-                if (value.GetType() == typeof(UInt32[]))
-                {
-                    UInt32[] values = (UInt32[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
-                    {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
-                        {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
-
-                        }
-
                     }
                 }
                 if (value.GetType() == typeof(Int64[]))
                 {
                     Int64[] values = (Int64[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        if (i < sheet.LastRowNum && sheet.GetRow(i + 1) != null)
                         {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
+                            sheet.GetRow(i + 1).CreateCell(column).SetCellValue(Convert.ToString(values[i]));
 
                         }
-
                     }
                 }
                 if (value.GetType() == typeof(byte[]))
                 {
                     byte[] values = (byte[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        if (i < sheet.LastRowNum && sheet.GetRow(i + 1) != null)
                         {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
-                        }
+                            sheet.GetRow(i + 1).CreateCell(column).SetCellValue(Convert.ToString(values[i]));
 
+                        }
                     }
                 }
                 if (value.GetType() == typeof(char[]))
                 {
                     char[] values = (char[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        if (i < sheet.LastRowNum && sheet.GetRow(i + 1) != null)
                         {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
-
+                            sheet.GetRow(i + 1).CreateCell(column).SetCellValue(Convert.ToString(values[i]));
 
                         }
-
                     }
                 }
                 if (value.GetType() == typeof(double[]))
                 {
                     double[] values = (double[])value;
-                    for (int i = 0; i < sheet.LastRowNum; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        if (sheet.GetRow(i + 1).GetCell(column) != null)
+                        if (i < sheet.LastRowNum && sheet.GetRow(i + 1) != null)
                         {
-                            if (i < values.Length)
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue(Convert.ToString(values[i]));
-                            }
-                            else
-                            {
-                                sheet.GetRow(i + 1).GetCell(column).SetCellValue("ValueIsNull");
-                            }
+                            sheet.GetRow(i + 1).CreateCell(column).SetCellValue(Convert.ToString(values[i]));
 
                         }
-
                     }
                 }
 
@@ -963,6 +806,7 @@ namespace Ph_Mc_LiXinErFeng
 
 
         }
+
 
 
 
