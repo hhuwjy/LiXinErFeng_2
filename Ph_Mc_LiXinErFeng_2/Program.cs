@@ -122,6 +122,11 @@ namespace Ph_Mc_LiXinErFeng
 
         static void Main(string[] args)
         {
+            if (!HslCommunication.Authorization.SetAuthorizationCode("b7fb5c78-1c92-41f5-9fd3-de73313ba9c2"))
+            {
+                Console.WriteLine("授权失败!当前程序只能使用24小时!");
+            }
+           
 
             int stepNumber = 5;
 
@@ -335,20 +340,32 @@ namespace Ph_Mc_LiXinErFeng
                             #endregion
 
 
-                          
-                         
+
+
                             #region 读取并发送两份Excel里的设备总览表
 
-                            deviceInfoStruct1_IEC = readExcel.ReadDeviceInfo_Excel(excelWorkbook1, "离心二封设备总览");   // LXEFData(4795 4794 4794)
-                            deviceInfoStruct2_IEC = readExcel.ReadDeviceInfo_Excel(excelWorkbook2, "离心二封设备总览");   // LXEFData(4752) 
-
+                            var deviceInfoStructList_IEC = new DeviceInfoStructList_IEC();
                             listWriteItem = new List<WriteItem>();
 
- 
                             //4794
+
+                            deviceInfoStruct1_IEC = readExcel.ReadDeviceInfo_Excel(excelWorkbook1, "离心二封设备总览");   // LXEFData(4795 4794 4794)
+
+                            deviceInfoStructList_IEC.iCount = (short)deviceInfoStruct1_IEC.Length;
+                            for (int i = 0; i < deviceInfoStruct1_IEC.Length; i++)
+                            {
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strDeviceName = deviceInfoStruct1_IEC[i].strDeviceName;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strDeviceCode = deviceInfoStruct1_IEC[i].strDeviceCode;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].iStationCount = deviceInfoStruct1_IEC[i].iStationCount;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strPLCType = deviceInfoStruct1_IEC[i].strPLCType;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strProtocol = deviceInfoStruct1_IEC[i].strProtocol;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strIPAddress = deviceInfoStruct1_IEC[i].strIPAddress;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].iPort = deviceInfoStruct1_IEC[i].iPort;
+                            }
+
                             try
                             {
-                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["OverviewInfo"], Arp.Type.Grpc.CoreType.CtStruct, deviceInfoStruct1_IEC[0]));
+                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["OverviewInfo"], Arp.Type.Grpc.CoreType.CtStruct, deviceInfoStructList_IEC));
                                 var writeItemsArray = listWriteItem.ToArray();
                                 var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
                                 bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
@@ -361,11 +378,27 @@ namespace Ph_Mc_LiXinErFeng
                             listWriteItem.Clear();
 
 
-                            //4752
+                            //4752 
+                            deviceInfoStructList_IEC = new DeviceInfoStructList_IEC();
+                            deviceInfoStruct2_IEC = readExcel.ReadDeviceInfo_Excel(excelWorkbook2, "离心二封设备总览");   // LXEFData(4752) 
+
+                            deviceInfoStructList_IEC.iCount = (short)deviceInfoStruct2_IEC.Length;
+                            for (int i = 0; i < deviceInfoStruct2_IEC.Length; i++)
+                            {
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strDeviceName = deviceInfoStruct2_IEC[i].strDeviceName;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strDeviceCode = deviceInfoStruct2_IEC[i].strDeviceCode;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].iStationCount = deviceInfoStruct2_IEC[i].iStationCount;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strPLCType = deviceInfoStruct2_IEC[i].strPLCType;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strProtocol = deviceInfoStruct2_IEC[i].strProtocol;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].strIPAddress = deviceInfoStruct2_IEC[i].strIPAddress;
+                                deviceInfoStructList_IEC.arrDeviceInfo[i].iPort = deviceInfoStruct2_IEC[i].iPort;
+                            }
+
+
                             try
                             {                          
                       
-                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary4["OverviewInfo"], Arp.Type.Grpc.CoreType.CtStruct, deviceInfoStruct2_IEC[0]));
+                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary4["OverviewInfo"], Arp.Type.Grpc.CoreType.CtStruct, deviceInfoStructList_IEC));
                                 var writeItemsArray = listWriteItem.ToArray();
                                 var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
                                 bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
@@ -1014,8 +1047,9 @@ namespace Ph_Mc_LiXinErFeng
                                     listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, 1));
                                     if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                                     {
-                                        logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                        // logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
                                         //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                        continue;
                                     }
                                     else
                                     {
@@ -1033,8 +1067,9 @@ namespace Ph_Mc_LiXinErFeng
                                     listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -1));
                                     if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                                     {
-                                        logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                        //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
                                         //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                        continue;
                                     }
                                     else
                                     {
@@ -1100,38 +1135,93 @@ namespace Ph_Mc_LiXinErFeng
 
                             #region 检测PLCnext和Keyence PLC之间的连接
 
-                            for (int i=0; i <clientNum;i ++)
+                            IPStatus iPStatus_4794;
+                            IPStatus iPStatus_4752;
+                            iPStatus_4794 = _mc[0].IpAddressPing();  //判断与PLC的物理连接状态
+                            iPStatus_4752 = _mc[1].IpAddressPing();  //判断与PLC的物理连接状态
+
+                            if (iPStatus_4794 != 0 && iPStatus_4752 == 0)
                             {
-                                IPStatus iPStatus;
-                                iPStatus = _mc[i].IpAddressPing();  //判断与PLC的物理连接状态
+                                logNet.WriteError("[MC]", "Ping Keyence PLC 4795 failed");
 
-                                string[] plcErrors = {
-
-                                                        "Ping Keyence PLC 4794 failed",
-                                                        "Ping Keyence PLC 4752 failed"  
-                                                      };
-
-                                if (iPStatus != 0)
+                                //APP Status ： Error
+                                listWriteItem.Clear();
+                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -2));
+                                if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
                                 {
-                                    logNet.WriteError("[MC]", plcErrors[i]);
-
-                                    //APP Status ： Error
-                                    listWriteItem.Clear();
-                                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -2));
-                                    if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
-                                    {
-                                        logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
-                                        //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
-                                    }
-                                    else
-                                    {
-                                        //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
-                                        logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
-                                    }
-
+                                    //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                    continue;
+                                }
+                                else
+                                {
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
+                                    logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
                                 }
 
                             }
+
+                            if (iPStatus_4752 != 0 && iPStatus_4794 == 0)
+                            {
+                                logNet.WriteError("[MC]", "Ping Keyence PLC 4785 failed");
+
+                                //APP Status ： Error
+                                listWriteItem.Clear();
+                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -3));
+                                if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
+                                {
+                                    //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                    continue;
+                                }
+                                else
+                                {
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
+                                    logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
+                                }
+
+                            }
+
+                            if (iPStatus_4752 != 0 && iPStatus_4794 != 0)
+                            {
+                                logNet.WriteError("[MC]", "Ping Keyence PLC 4785 failed");
+
+                                //APP Status ： Error
+                                listWriteItem.Clear();
+                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -4));
+                                if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
+                                {
+                                    //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                    continue;
+                                }
+                                else
+                                {
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
+                                    logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
+                                }
+
+                            }
+                            if (iPStatus_4752 == 0 && iPStatus_4794 == 0)
+                            {
+
+                                //APP Status ：Running
+                                listWriteItem.Clear();
+                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, 1));
+                                if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
+                                {
+                                    //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
+                                    continue;
+                                }
+                                else
+                                {
+                                    //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
+                                    logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
+                                }
+
+                            }
+
 
                             #endregion
 

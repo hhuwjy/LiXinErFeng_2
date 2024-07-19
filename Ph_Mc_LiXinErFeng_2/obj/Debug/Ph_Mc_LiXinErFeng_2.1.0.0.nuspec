@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Ph_Mc_LiXinErFeng_2</id>
+    <version>1.0.0</version>
+    <authors>Ph_Mc_LiXinErFeng_2</authors>
+    <description>Package Description</description>
+    <repository type="git" commit="b9bcbf8f79f44dda1b535ff6c6f6ebb7bcdbc7ae" />
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="Google.Protobuf" version="3.27.1" exclude="Build,Analyzers" />
+        <dependency id="Grpc.Core" version="2.46.6" exclude="Build,Analyzers" />
+        <dependency id="Grpc.Net.Client" version="2.63.0" exclude="Build,Analyzers" />
+        <dependency id="HslCommunication" version="12.0.2" exclude="Build,Analyzers" />
+        <dependency id="NPOI" version="2.7.0" exclude="Build,Analyzers" />
+        <dependency id="OPCFoundation.NetStandard.Opc.Ua.Client" version="1.5.374.54" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\LiXinErFeng_MC_2\Ph_Mc_LiXinErFeng_2\Ph_Mc_LiXinErFeng_2\bin\Debug\net6.0\Ph_Mc_LiXinErFeng_2.runtimeconfig.json" target="lib\net6.0\Ph_Mc_LiXinErFeng_2.runtimeconfig.json" />
+    <file src="D:\2024\Work\12-冠宇数采项目\ReadFromStructArray\LiXinErFeng_MC_2\Ph_Mc_LiXinErFeng_2\Ph_Mc_LiXinErFeng_2\bin\Debug\net6.0\Ph_Mc_LiXinErFeng_2.dll" target="lib\net6.0\Ph_Mc_LiXinErFeng_2.dll" />
+  </files>
+</package>
