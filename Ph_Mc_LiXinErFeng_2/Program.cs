@@ -603,8 +603,14 @@ namespace Ph_Mc_LiXinErFeng
                                 {
                                     TimeSpan start = new TimeSpan(DateTime.Now.Ticks);
 
-                                    // 读取并发送设备信息表里的采集值 （只有工位记忆）
-                                    keyenceClients.ReadandSendDeviceInfo1(StationMemory_LXEF1, mc, ref allDataReadfromMC_4794, ref StationListlnfo, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);
+                                    OperateResult<bool> OEE_Green = mc.ReadBool(OEE1_LXEF1[2].varName);
+                                    if(OEE_Green.Content&& OEE_Green.IsSuccess)
+                                    {
+
+                                        // 读取并发送设备信息表里的采集值 （只有工位记忆）
+                                        keyenceClients.ReadandSendDeviceInfo1(StationMemory_LXEF1, mc, ref allDataReadfromMC_4794, ref StationListlnfo, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);
+
+                                    }
 
 
                                     TimeSpan end = new TimeSpan(DateTime.Now.Ticks);
@@ -652,20 +658,23 @@ namespace Ph_Mc_LiXinErFeng
                                     keyenceClients.ReadAlarmData(Alarm_LXEF1, mc, ref DeviceDataStruct);
 
                                     //OEE数据
+                                    //bool[] OEE_temp1 = keyenceClients.ReadOEEData(OEE1_LXEF1, mc);
+                                    //if (OEE_temp1 != null)
+                                    //{
+                                    //    Array.Copy(OEE_temp1, 0, allDataReadfromMC_4794.OEEInfo1Value, 0, OEE_temp1.Length);   //写入缓存区
+                                    //}
+
+                                    //bool[] OEE_temp2 = keyenceClients.ReadOEEData(OEE2_LXEF1, mc);
+
+                                    //if (OEE_temp2 != null)
+                                    //{
+                                    //    Array.Copy(OEE_temp2, 0, allDataReadfromMC_4794.OEEInfo2Value, 0, OEE_temp2.Length);   //写入缓存区
+
+                                    //}
+
+
                                     bool[] OEE_temp1 = keyenceClients.ReadOEEData(OEE1_LXEF1, mc);
-                                    if (OEE_temp1 != null)
-                                    {
-                                        Array.Copy(OEE_temp1, 0, allDataReadfromMC_4794.OEEInfo1Value, 0, OEE_temp1.Length);   //写入缓存区
-                                    }
-
                                     bool[] OEE_temp2 = keyenceClients.ReadOEEData(OEE2_LXEF1, mc);
-
-                                    if (OEE_temp2 != null)
-                                    {
-                                        Array.Copy(OEE_temp2, 0, allDataReadfromMC_4794.OEEInfo2Value, 0, OEE_temp2.Length);   //写入缓存区
-
-                                    }
-
 
                                     if (OEE_temp1 != null && OEE_temp2 != null)
                                     {
@@ -726,50 +735,59 @@ namespace Ph_Mc_LiXinErFeng
 
                                     #region 读取并发送四个加工工位的信息
 
-                                    var ReadObject = "EM5057";   //硬编码
-                                    ushort length = 25;
-                                    OperateResult<short[]> ret_EM = mc.ReadInt16(ReadObject, length);
-
-                                    ReadObject = "DM9500";   //硬编码
-                                    length = 308;
-                                    OperateResult<short[]> ret_DM = mc.ReadInt16(ReadObject, length);
-
-                                    ReadObject = "MR6008";   //硬编码
-                                    length = (ushort)(keyenceClients.CalculateIndex_H(6008, 9015) + 1);
-                                    OperateResult<bool[]> ret_MR = mc.ReadBool(ReadObject, length);
-
-                                    ProcessStationDataValue.iDataCount = 4;    // 一共四个加工工位
-
-                                    if (ret_EM.IsSuccess && ret_DM.IsSuccess && ret_MR.IsSuccess)
+                                    OperateResult<bool> OEE_Green = mc.ReadBool(OEE1_LXEF1[2].varName);
+                                    if (OEE_Green.Content && OEE_Green.IsSuccess)
                                     {
 
-                                        keyenceClients.WriteStationData(StationData1A_LXEF1, ret_EM.Content, ret_DM.Content, ret_MR.Content, ref allDataReadfromMC_4794, ref ProcessStationDataValue);
-                                        keyenceClients.WriteStationData(StationData1B_LXEF1, ret_EM.Content, ret_DM.Content, ret_MR.Content, ref allDataReadfromMC_4794, ref ProcessStationDataValue);
-                                        keyenceClients.WriteStationData(StationData2A_LXEF1, ret_EM.Content, ret_DM.Content, ret_MR.Content, ref allDataReadfromMC_4794, ref ProcessStationDataValue);
-                                        keyenceClients.WriteStationData(StationData2B_LXEF1, ret_EM.Content, ret_DM.Content, ret_MR.Content, ref allDataReadfromMC_4794, ref ProcessStationDataValue);
+                                        var ReadObject = "EM5057";   //硬编码
+                                        ushort length = 25;
+                                        OperateResult<short[]> ret_EM = mc.ReadInt16(ReadObject, length);
 
-                                        //Grpc 发送加工工位数据采集值
+                                        ReadObject = "DM9500";   //硬编码
+                                        length = 308;
+                                        OperateResult<short[]> ret_DM = mc.ReadInt16(ReadObject, length);
 
-                                        listWriteItem.Clear();
-                                        try
+                                        ReadObject = "MR6008";   //硬编码
+                                        length = (ushort)(keyenceClients.CalculateIndex_H(6008, 9015) + 1);
+                                        OperateResult<bool[]> ret_MR = mc.ReadBool(ReadObject, length);
+
+                                        ProcessStationDataValue.iDataCount = 4;    // 一共四个加工工位
+
+                                        if (ret_EM.IsSuccess && ret_DM.IsSuccess && ret_MR.IsSuccess)
                                         {
-                                            listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["ProcessStationData"], Arp.Type.Grpc.CoreType.CtStruct, ProcessStationDataValue));
-                                            var writeItemsArray = listWriteItem.ToArray();
-                                            var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                                            bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+
+                                            keyenceClients.WriteStationData(StationData1A_LXEF1, ret_EM.Content, ret_DM.Content, ret_MR.Content, ref allDataReadfromMC_4794, ref ProcessStationDataValue);
+                                            keyenceClients.WriteStationData(StationData1B_LXEF1, ret_EM.Content, ret_DM.Content, ret_MR.Content, ref allDataReadfromMC_4794, ref ProcessStationDataValue);
+                                            keyenceClients.WriteStationData(StationData2A_LXEF1, ret_EM.Content, ret_DM.Content, ret_MR.Content, ref allDataReadfromMC_4794, ref ProcessStationDataValue);
+                                            keyenceClients.WriteStationData(StationData2B_LXEF1, ret_EM.Content, ret_DM.Content, ret_MR.Content, ref allDataReadfromMC_4794, ref ProcessStationDataValue);
+
+                                            //Grpc 发送加工工位数据采集值
+
+                                            listWriteItem.Clear();
+                                            try
+                                            {
+                                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["ProcessStationData"], Arp.Type.Grpc.CoreType.CtStruct, ProcessStationDataValue));
+                                                var writeItemsArray = listWriteItem.ToArray();
+                                                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+                                                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                logNet.WriteError("[Grpc]", "No.4794 加工工位数据发送失败：" + e);
+
+                                            }
+
                                         }
-                                        catch (Exception e)
+                                        else
                                         {
-                                            logNet.WriteError("[Grpc]", "No.4794 加工工位数据发送失败：" + e);
+                                            logNet.WriteError("[MC]", "No.4794 加工工位数据读取失败");
 
                                         }
 
                                     }
-                                    else
-                                    {
-                                        logNet.WriteError("[MC]", "No.4794 加工工位数据读取失败");
 
-                                    }
+
+                                  
                                     #endregion
 
                                     TimeSpan end = new TimeSpan(DateTime.Now.Ticks);
@@ -809,8 +827,17 @@ namespace Ph_Mc_LiXinErFeng
                                 {
                                     TimeSpan start = new TimeSpan(DateTime.Now.Ticks);
 
-                                    // 读取并发送设备信息表里的采集值 （只有工位记忆，且数值连续）
-                                    keyenceClients.ReadandSendDeviceInfo2(StationMemory_LXEF2, mc, ref allDataReadfromMC_4752, ref StationListlnfo, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);
+                                    OperateResult<bool> OEE_Green = mc.ReadBool(OEE1_LXEF2[2].varName);
+
+                                    if (OEE_Green.IsSuccess && OEE_Green.Content)
+                                    {
+
+                                        // 读取并发送设备信息表里的采集值 （只有工位记忆，且数值连续）
+                                        keyenceClients.ReadandSendDeviceInfo2(StationMemory_LXEF2, mc, ref allDataReadfromMC_4752, ref StationListlnfo, grpcToolInstance, nodeidDictionary, grpcDataAccessServiceClient, options1);
+
+
+                                    }
+
 
 
                                     TimeSpan end = new TimeSpan(DateTime.Now.Ticks);
@@ -858,20 +885,23 @@ namespace Ph_Mc_LiXinErFeng
                                     keyenceClients.ReadAlarmData(Alarm_LXEF2, mc, ref DeviceDataStruct);
 
                                     //OEE数据
+                                    //bool[] OEE_temp1 = keyenceClients.ReadOEEData(OEE1_LXEF2, mc);
+                                    //if (OEE_temp1 != null)
+                                    //{
+                                    //    Array.Copy(OEE_temp1, 0, allDataReadfromMC_4752.OEEInfo1Value, 0, OEE_temp1.Length);   //写入缓存区
+                                    //}
+
+                                    //bool[] OEE_temp2 = keyenceClients.ReadOEEData(OEE2_LXEF2, mc);
+
+                                    //if (OEE_temp2 != null)
+                                    //{
+                                    //    Array.Copy(OEE_temp2, 0, allDataReadfromMC_4752.OEEInfo2Value, 0, OEE_temp2.Length);   //写入缓存区
+
+                                    //}
+
+
                                     bool[] OEE_temp1 = keyenceClients.ReadOEEData(OEE1_LXEF2, mc);
-                                    if (OEE_temp1 != null)
-                                    {
-                                        Array.Copy(OEE_temp1, 0, allDataReadfromMC_4752.OEEInfo1Value, 0, OEE_temp1.Length);   //写入缓存区
-                                    }
-
                                     bool[] OEE_temp2 = keyenceClients.ReadOEEData(OEE2_LXEF2, mc);
-
-                                    if (OEE_temp2 != null)
-                                    {
-                                        Array.Copy(OEE_temp2, 0, allDataReadfromMC_4752.OEEInfo2Value, 0, OEE_temp2.Length);   //写入缓存区
-
-                                    }
-
 
                                     if (OEE_temp1 != null && OEE_temp2 != null)
                                     {
@@ -929,56 +959,62 @@ namespace Ph_Mc_LiXinErFeng
                                 {
                                     TimeSpan start = new TimeSpan(DateTime.Now.Ticks);
 
-                                    var ReadObject = "EM5057";   //硬编码
-                                    ushort length = 25;
-                                    OperateResult<short[]> ret_EM = mc.ReadInt16(ReadObject, length);
+                                    OperateResult<bool> OEE_Green = mc.ReadBool(OEE1_LXEF2[2].varName);
 
-                                    ReadObject = "DM9500";   //硬编码
-                                    length = 308;
-                                    OperateResult<short[]> ret_DM = mc.ReadInt16(ReadObject, length);
-
-                                    ReadObject = "MR6008";   //硬编码
-                                    length = (ushort)(keyenceClients.CalculateIndex_H(6008, 9015) + 1);
-                                    OperateResult<bool[]> ret_MR = mc.ReadBool(ReadObject, length);
-
-
-                                    ReadObject = "R79003";   //硬编码
-                                    length = (ushort)(keyenceClients.CalculateIndex_H(79003, 79303) + 1);
-                                    OperateResult<bool[]> ret_R = mc.ReadBool(ReadObject, length);
-
-                                    ProcessStationDataValue.iDataCount = 4;    // 一共四个加工工位
-
-                                    if (ret_EM.IsSuccess && ret_DM.IsSuccess && ret_MR.IsSuccess && ret_R.IsSuccess)
+                                    if (OEE_Green.IsSuccess && OEE_Green.Content)
                                     {
+                                        var ReadObject = "EM5057";   //硬编码
+                                        ushort length = 25;
+                                        OperateResult<short[]> ret_EM = mc.ReadInt16(ReadObject, length);
 
-                                        keyenceClients.WriteStationData(StationData1A_LXEF2, ret_EM.Content, ret_DM.Content, ret_MR.Content, ret_R.Content, ref allDataReadfromMC_4752, ref ProcessStationDataValue);
-                                        keyenceClients.WriteStationData(StationData1B_LXEF2, ret_EM.Content, ret_DM.Content, ret_MR.Content, ret_R.Content, ref allDataReadfromMC_4752, ref ProcessStationDataValue);
-                                        keyenceClients.WriteStationData(StationData2A_LXEF2, ret_EM.Content, ret_DM.Content, ret_MR.Content, ret_R.Content, ref allDataReadfromMC_4752, ref ProcessStationDataValue);
-                                        keyenceClients.WriteStationData(StationData2B_LXEF2, ret_EM.Content, ret_DM.Content, ret_MR.Content, ret_R.Content, ref allDataReadfromMC_4752, ref ProcessStationDataValue);
+                                        ReadObject = "DM9500";   //硬编码
+                                        length = 308;
+                                        OperateResult<short[]> ret_DM = mc.ReadInt16(ReadObject, length);
 
-                                        //Grpc 发送加工工位数据采集值
+                                        ReadObject = "MR6008";   //硬编码
+                                        length = (ushort)(keyenceClients.CalculateIndex_H(6008, 9015) + 1);
+                                        OperateResult<bool[]> ret_MR = mc.ReadBool(ReadObject, length);
 
-                                        listWriteItem.Clear();
-                                        try
+
+                                        ReadObject = "R79003";   //硬编码
+                                        length = (ushort)(keyenceClients.CalculateIndex_H(79003, 79303) + 1);
+                                        OperateResult<bool[]> ret_R = mc.ReadBool(ReadObject, length);
+
+                                        ProcessStationDataValue.iDataCount = 4;    // 一共四个加工工位
+
+                                        if (ret_EM.IsSuccess && ret_DM.IsSuccess && ret_MR.IsSuccess && ret_R.IsSuccess)
                                         {
-                                            listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["ProcessStationData"], Arp.Type.Grpc.CoreType.CtStruct, ProcessStationDataValue));
-                                            var writeItemsArray = listWriteItem.ToArray();
-                                            var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
-                                            bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            logNet.WriteError("[Grpc]", "No.4752 加工工位数据发送失败：" + e);
+
+                                            keyenceClients.WriteStationData(StationData1A_LXEF2, ret_EM.Content, ret_DM.Content, ret_MR.Content, ret_R.Content, ref allDataReadfromMC_4752, ref ProcessStationDataValue);
+                                            keyenceClients.WriteStationData(StationData1B_LXEF2, ret_EM.Content, ret_DM.Content, ret_MR.Content, ret_R.Content, ref allDataReadfromMC_4752, ref ProcessStationDataValue);
+                                            keyenceClients.WriteStationData(StationData2A_LXEF2, ret_EM.Content, ret_DM.Content, ret_MR.Content, ret_R.Content, ref allDataReadfromMC_4752, ref ProcessStationDataValue);
+                                            keyenceClients.WriteStationData(StationData2B_LXEF2, ret_EM.Content, ret_DM.Content, ret_MR.Content, ret_R.Content, ref allDataReadfromMC_4752, ref ProcessStationDataValue);
+
+                                            //Grpc 发送加工工位数据采集值
+
+                                            listWriteItem.Clear();
+                                            try
+                                            {
+                                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary["ProcessStationData"], Arp.Type.Grpc.CoreType.CtStruct, ProcessStationDataValue));
+                                                var writeItemsArray = listWriteItem.ToArray();
+                                                var dataAccessServiceWriteRequest = grpcToolInstance.ServiceWriteRequestAddDatas(writeItemsArray);
+                                                bool result = grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceWriteRequest, new IDataAccessServiceWriteResponse(), options1);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                logNet.WriteError("[Grpc]", "No.4752 加工工位数据发送失败：" + e);
+
+                                            }
 
                                         }
+                                        else
+                                        {
+                                            logNet.WriteError("[MC]", "No.4752加工工位数据读取失败");
+
+                                        }
+
 
                                     }
-                                    else
-                                    {
-                                        logNet.WriteError("[MC]", "No.4752加工工位数据读取失败");
-
-                                    }
-
 
 
                                     TimeSpan end = new TimeSpan(DateTime.Now.Ticks);
@@ -1044,41 +1080,12 @@ namespace Ph_Mc_LiXinErFeng
                                     thr[5].Start();
 
 
-
-                                    ////APP Status ： running
-                                    //listWriteItem.Clear();
-                                    //listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, 1));
-                                    //if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
-                                    //{
-                                    //    // logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
-                                    //    //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
-                                    //    continue;
-                                    //}
-                                    //else
-                                    //{
-                                    //    //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
-                                    //    logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
-                                    //}
-
                                 }
                                 catch
                                 {
                                     Console.WriteLine("Thread quit");
 
-                                    ////APP Status ： Error
-                                    //listWriteItem.Clear();
-                                    //listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["AppStatus"], Arp.Type.Grpc.CoreType.CtInt32, -1));
-                                    //if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
-                                    //{
-                                    //    //logNet.WriteInfo("[Grpc]", "AppStatus 写入IEC成功");
-                                    //    //Console.WriteLine("{0}      AppStatus写入IEC: success", DateTime.Now);
-                                    //    continue;
-                                    //}
-                                    //else
-                                    //{
-                                    //    //Console.WriteLine("{0}      AppStatus写入IEC: fail", DateTime.Now);
-                                    //    logNet.WriteError("[Grpc]", "AppStatus 写入IEC失败");
-                                    //}
+                                   
 
                                     stepNumber = 1000;
                                     break;
@@ -1166,286 +1173,286 @@ namespace Ph_Mc_LiXinErFeng
                             #endregion
 
 
-                            #region IEC发送触发信号,将采集值写入Excel
+                            #region IEC发送触发信号,将采集值写入Excel  (屏蔽）
 
-                            dataAccessServiceReadSingleRequest = new IDataAccessServiceReadSingleRequest();
-                            dataAccessServiceReadSingleRequest.PortName = nodeidDictionary3["Switch_WriteExcelFile"];
-                            if (grpcToolInstance.ReadSingleDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceReadSingleRequest, new IDataAccessServiceReadSingleResponse(), options1).BoolValue)
-                            {
-                                //复位信号点: Switch_WriteExcelFile
-                                listWriteItem.Clear();
-                                listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["Switch_WriteExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, false)); //Write Data to DataAccessService                                 
-                                if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
-                                {
-                                    //Console.WriteLine("{0}      Switch_WriteExcelFile: success", DateTime.Now);
-                                    logNet.WriteInfo("[Grpc]", "Switch_WriteExcelFile 写入IEC成功");
-                                }
-                                else
-                                {
-                                    //Console.WriteLine("{0}      Switch_WriteExcelFile: fail", DateTime.Now);
-                                    logNet.WriteError("[Grpc]", "Switch_WriteExcelFile 写入IEC失败");
-                                }
+                            //dataAccessServiceReadSingleRequest = new IDataAccessServiceReadSingleRequest();
+                            //dataAccessServiceReadSingleRequest.PortName = nodeidDictionary3["Switch_WriteExcelFile"];
+                            //if (grpcToolInstance.ReadSingleDataToDataAccessService(grpcDataAccessServiceClient, dataAccessServiceReadSingleRequest, new IDataAccessServiceReadSingleResponse(), options1).BoolValue)
+                            //{
+                            //    //复位信号点: Switch_WriteExcelFile
+                            //    listWriteItem.Clear();
+                            //    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["Switch_WriteExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, false)); //Write Data to DataAccessService                                 
+                            //    if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
+                            //    {
+                            //        //Console.WriteLine("{0}      Switch_WriteExcelFile: success", DateTime.Now);
+                            //        logNet.WriteInfo("[Grpc]", "Switch_WriteExcelFile 写入IEC成功");
+                            //    }
+                            //    else
+                            //    {
+                            //        //Console.WriteLine("{0}      Switch_WriteExcelFile: fail", DateTime.Now);
+                            //        logNet.WriteError("[Grpc]", "Switch_WriteExcelFile 写入IEC失败");
+                            //    }
 
-                                //将读取的值写入Excel 
-                                thr[6] = new Thread(() =>
-                                {
+                            //    //将读取的值写入Excel 
+                            //    thr[6] = new Thread(() =>
+                            //    {
 
-                                    var ExcelPath1 = "/opt/plcnext/apps/LXEFData(4794).xlsx";
-                                    var ExcelPath2 = "/opt/plcnext/apps/LXEFData(4752).xlsx";
+                            //        var ExcelPath1 = "/opt/plcnext/apps/LXEFData(4794).xlsx";
+                            //        var ExcelPath2 = "/opt/plcnext/apps/LXEFData(4752).xlsx";
 
-                                    //var ExcelPath1 = Directory.GetCurrentDirectory() + "\\LXEFData(4794).xlsx";
-                                    //var ExcelPath2 = Directory.GetCurrentDirectory() + "\\LXEFData(4752).xlsx";     //PC端测试路径
+                            //        //var ExcelPath1 = Directory.GetCurrentDirectory() + "\\LXEFData(4794).xlsx";
+                            //        //var ExcelPath2 = Directory.GetCurrentDirectory() + "\\LXEFData(4752).xlsx";     //PC端测试路径
 
-                                    //将数据缓存区的值赋给临时变量
-                                    var allDataReadfromMC_temp_4794 = allDataReadfromMC_4794;
-                                    var allDataReadfromMC_temp_4752 = allDataReadfromMC_4752;
-
-
-
-                                    #region 将数据缓存区的值写入Excel(4794)
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath1, "设备信息", "采集值", allDataReadfromMC_temp_4794.DeviceInfoValue);
-                                        logNet.WriteInfo("WriteData", "编号4794 工位记忆采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4794 工位记忆采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath1, "加工工位(1A)", "采集值", allDataReadfromMC_temp_4794.Station1AInfoValue);
-                                        logNet.WriteInfo("WriteData", "编号4794 加工工位(1A)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4794 加工工位(1A)采集值写入Excel失败原因: " + e);
-
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath1, "加工工位(1B)", "采集值", allDataReadfromMC_temp_4794.Station1BInfoValue);
-                                        logNet.WriteInfo("WriteData", "编号4794 加工工位(1B)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4794 加工工位(1B)采集值写入Excel失败原因: " + e);
-
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath1, "加工工位(2A)", "采集值", allDataReadfromMC_temp_4794.Station2AInfoValue);
-                                        logNet.WriteInfo("WriteData", "编号4794 加工工位(2A)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4794 加工工位(2A)采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath1, "加工工位(2B)", "采集值", allDataReadfromMC_temp_4794.Station2BInfoValue);
-                                        logNet.WriteInfo("WriteData", "编号4794 加工工位(2B)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4794 加工工位(2B)采集值写入Excel失败原因: " + e);
-                                    }
+                            //        //将数据缓存区的值赋给临时变量
+                            //        var allDataReadfromMC_temp_4794 = allDataReadfromMC_4794;
+                            //        var allDataReadfromMC_temp_4752 = allDataReadfromMC_4752;
 
 
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath1, "OEE(1)", "采集值", allDataReadfromMC_temp_4794.OEEInfo1Value);
-                                        logNet.WriteInfo("WriteData", "编号4794 OEE(1)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4794 OEE(1)采集值写入Excel失败原因: " + e);
-                                    }
 
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath1, "OEE(2)", "采集值", allDataReadfromMC_temp_4794.OEEInfo2Value);
-                                        logNet.WriteInfo("WriteData", "编号4794 OEE(2)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4794 OEE(2)采集值写入Excel失败原因: " + e);
-                                    }
+                            //        #region 将数据缓存区的值写入Excel(4794)
 
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath1, "功能开关", "采集值", allDataReadfromMC_temp_4794.FunctionEnableValue);
-                                        logNet.WriteInfo("WriteData", "编号4794 功能开关采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4794 功能开关采集值写入Excel失败原因: " + e);
-                                    }
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath1, "设备信息", "采集值", allDataReadfromMC_temp_4794.DeviceInfoValue);
+                            //            logNet.WriteInfo("WriteData", "编号4794 工位记忆采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4794 工位记忆采集值写入Excel失败原因: " + e);
+                            //        }
 
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath1, "生产统计", "采集值", allDataReadfromMC_temp_4794.ProductionDataValue);
-                                        logNet.WriteInfo("WriteData", "编号4794 生产统计采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4794 生产统计采集值写入Excel失败原因: " + e);
-                                    }
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath1, "加工工位(1A)", "采集值", allDataReadfromMC_temp_4794.Station1AInfoValue);
+                            //            logNet.WriteInfo("WriteData", "编号4794 加工工位(1A)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4794 加工工位(1A)采集值写入Excel失败原因: " + e);
 
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath1, "寿命管理", "采集值", allDataReadfromMC_temp_4794.LifeManagementValue);
-                                        logNet.WriteInfo("WriteData", "编号4794 寿命管理采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4794 寿命管理采集值写入Excel失败原因: " + e);
-                                    }
+                            //        }
 
-                                    #endregion
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath1, "加工工位(1B)", "采集值", allDataReadfromMC_temp_4794.Station1BInfoValue);
+                            //            logNet.WriteInfo("WriteData", "编号4794 加工工位(1B)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4794 加工工位(1B)采集值写入Excel失败原因: " + e);
 
+                            //        }
 
-                                    #region 将数据缓存区的值写入Excel(4752)
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath1, "加工工位(2A)", "采集值", allDataReadfromMC_temp_4794.Station2AInfoValue);
+                            //            logNet.WriteInfo("WriteData", "编号4794 加工工位(2A)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4794 加工工位(2A)采集值写入Excel失败原因: " + e);
+                            //        }
 
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath2, "设备信息", "采集值", allDataReadfromMC_temp_4752.DeviceInfoValue);
-                                        logNet.WriteInfo("WriteData", "编号4752 工位记忆采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4752 工位记忆采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath2, "加工工位(1A)", "采集值", allDataReadfromMC_temp_4752.Station1AInfoValue);
-                                        logNet.WriteInfo("WriteData", "编号4752 加工工位(1A)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4752 加工工位(1A)采集值写入Excel失败原因: " + e);
-
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath2, "加工工位(1B)", "采集值", allDataReadfromMC_temp_4752.Station1BInfoValue);
-                                        logNet.WriteInfo("WriteData", "编号4752 加工工位(1B)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4752 加工工位(1B)采集值写入Excel失败原因: " + e);
-
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath2, "加工工位(2A)", "采集值", allDataReadfromMC_temp_4752.Station2AInfoValue);
-                                        logNet.WriteInfo("WriteData", "编号4752 加工工位(2A)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4752 加工工位(2A)采集值写入Excel失败原因: " + e);
-                                    }
-
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath2, "加工工位(2B)", "采集值", allDataReadfromMC_temp_4752.Station2BInfoValue);
-                                        logNet.WriteInfo("WriteData", "编号4752 加工工位(2B)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4752 加工工位(2B)采集值写入Excel失败原因: " + e);
-                                    }
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath1, "加工工位(2B)", "采集值", allDataReadfromMC_temp_4794.Station2BInfoValue);
+                            //            logNet.WriteInfo("WriteData", "编号4794 加工工位(2B)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4794 加工工位(2B)采集值写入Excel失败原因: " + e);
+                            //        }
 
 
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath2, "OEE(1)", "采集值", allDataReadfromMC_temp_4752.OEEInfo1Value);
-                                        logNet.WriteInfo("WriteData", "编号4752 OEE(1)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4752 OEE(1)采集值写入Excel失败原因: " + e);
-                                    }
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath1, "OEE(1)", "采集值", allDataReadfromMC_temp_4794.OEEInfo1Value);
+                            //            logNet.WriteInfo("WriteData", "编号4794 OEE(1)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4794 OEE(1)采集值写入Excel失败原因: " + e);
+                            //        }
 
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath2, "OEE(2)", "采集值", allDataReadfromMC_temp_4752.OEEInfo2Value);
-                                        logNet.WriteInfo("WriteData", "编号4752 OEE(2)采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4752 OEE(2)采集值写入Excel失败原因: " + e);
-                                    }
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath1, "OEE(2)", "采集值", allDataReadfromMC_temp_4794.OEEInfo2Value);
+                            //            logNet.WriteInfo("WriteData", "编号4794 OEE(2)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4794 OEE(2)采集值写入Excel失败原因: " + e);
+                            //        }
 
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath2, "功能开关", "采集值", allDataReadfromMC_temp_4752.FunctionEnableValue);
-                                        logNet.WriteInfo("WriteData", "编号4752 功能开关采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4752 功能开关采集值写入Excel失败原因: " + e);
-                                    }
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath1, "功能开关", "采集值", allDataReadfromMC_temp_4794.FunctionEnableValue);
+                            //            logNet.WriteInfo("WriteData", "编号4794 功能开关采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4794 功能开关采集值写入Excel失败原因: " + e);
+                            //        }
 
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath2, "生产统计", "采集值", allDataReadfromMC_temp_4752.ProductionDataValue);
-                                        logNet.WriteInfo("WriteData", "编号4752 生产统计采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4752 生产统计采集值写入Excel失败原因: " + e);
-                                    }
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath1, "生产统计", "采集值", allDataReadfromMC_temp_4794.ProductionDataValue);
+                            //            logNet.WriteInfo("WriteData", "编号4794 生产统计采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4794 生产统计采集值写入Excel失败原因: " + e);
+                            //        }
 
-                                    try
-                                    {
-                                        var result = readExcel.setExcelCellValue(ExcelPath2, "寿命管理", "采集值", allDataReadfromMC_temp_4752.LifeManagementValue);
-                                        logNet.WriteInfo("WriteData", "编号4752 寿命管理采集值写入Excel: " + (result ? "成功" : "失败"));
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logNet.WriteError("WriteData", "编号4752 寿命管理采集值写入Excel失败原因: " + e);
-                                    }
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath1, "寿命管理", "采集值", allDataReadfromMC_temp_4794.LifeManagementValue);
+                            //            logNet.WriteInfo("WriteData", "编号4794 寿命管理采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4794 寿命管理采集值写入Excel失败原因: " + e);
+                            //        }
 
-                                    #endregion
+                            //        #endregion
 
 
-                                    //给IEC写入 采集值写入成功的信号
-                                    var tempFlag_finishWriteExcelFile = true;
+                            //        #region 将数据缓存区的值写入Excel(4752)
 
-                                    listWriteItem.Clear();
-                                    listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["flag_finishWriteExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, tempFlag_finishWriteExcelFile));
-                                    if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
-                                    {
-                                        //Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: success", DateTime.Now);
-                                        logNet.WriteInfo("[Grpc]", "flag_finishWriteExcelFile 写入IEC成功");
-                                    }
-                                    else
-                                    {
-                                        //Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: fail", DateTime.Now);
-                                        logNet.WriteError("[Grpc]", "flag_finishWriteExcelFile 写入IEC失败");
-                                    }
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath2, "设备信息", "采集值", allDataReadfromMC_temp_4752.DeviceInfoValue);
+                            //            logNet.WriteInfo("WriteData", "编号4752 工位记忆采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4752 工位记忆采集值写入Excel失败原因: " + e);
+                            //        }
 
-                                    IecTriggersNumber = 0;  //为了防止IEC连续两次赋值true
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath2, "加工工位(1A)", "采集值", allDataReadfromMC_temp_4752.Station1AInfoValue);
+                            //            logNet.WriteInfo("WriteData", "编号4752 加工工位(1A)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4752 加工工位(1A)采集值写入Excel失败原因: " + e);
 
-                                });
+                            //        }
 
-                                IecTriggersNumber++;
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath2, "加工工位(1B)", "采集值", allDataReadfromMC_temp_4752.Station1BInfoValue);
+                            //            logNet.WriteInfo("WriteData", "编号4752 加工工位(1B)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4752 加工工位(1B)采集值写入Excel失败原因: " + e);
 
-                                if (IecTriggersNumber == 1)
-                                {
-                                    thr[6].Start();
-                                }
+                            //        }
 
-                            }
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath2, "加工工位(2A)", "采集值", allDataReadfromMC_temp_4752.Station2AInfoValue);
+                            //            logNet.WriteInfo("WriteData", "编号4752 加工工位(2A)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4752 加工工位(2A)采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath2, "加工工位(2B)", "采集值", allDataReadfromMC_temp_4752.Station2BInfoValue);
+                            //            logNet.WriteInfo("WriteData", "编号4752 加工工位(2B)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4752 加工工位(2B)采集值写入Excel失败原因: " + e);
+                            //        }
+
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath2, "OEE(1)", "采集值", allDataReadfromMC_temp_4752.OEEInfo1Value);
+                            //            logNet.WriteInfo("WriteData", "编号4752 OEE(1)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4752 OEE(1)采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath2, "OEE(2)", "采集值", allDataReadfromMC_temp_4752.OEEInfo2Value);
+                            //            logNet.WriteInfo("WriteData", "编号4752 OEE(2)采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4752 OEE(2)采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath2, "功能开关", "采集值", allDataReadfromMC_temp_4752.FunctionEnableValue);
+                            //            logNet.WriteInfo("WriteData", "编号4752 功能开关采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4752 功能开关采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath2, "生产统计", "采集值", allDataReadfromMC_temp_4752.ProductionDataValue);
+                            //            logNet.WriteInfo("WriteData", "编号4752 生产统计采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4752 生产统计采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        try
+                            //        {
+                            //            var result = readExcel.setExcelCellValue(ExcelPath2, "寿命管理", "采集值", allDataReadfromMC_temp_4752.LifeManagementValue);
+                            //            logNet.WriteInfo("WriteData", "编号4752 寿命管理采集值写入Excel: " + (result ? "成功" : "失败"));
+                            //        }
+                            //        catch (Exception e)
+                            //        {
+                            //            logNet.WriteError("WriteData", "编号4752 寿命管理采集值写入Excel失败原因: " + e);
+                            //        }
+
+                            //        #endregion
+
+
+                            //        //给IEC写入 采集值写入成功的信号
+                            //        var tempFlag_finishWriteExcelFile = true;
+
+                            //        listWriteItem.Clear();
+                            //        listWriteItem.Add(grpcToolInstance.CreatWriteItem(nodeidDictionary3["flag_finishWriteExcelFile"], Arp.Type.Grpc.CoreType.CtBoolean, tempFlag_finishWriteExcelFile));
+                            //        if (grpcToolInstance.WriteDataToDataAccessService(grpcDataAccessServiceClient, grpcToolInstance.ServiceWriteRequestAddDatas(listWriteItem.ToArray()), new IDataAccessServiceWriteResponse(), options1))
+                            //        {
+                            //            //Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: success", DateTime.Now);
+                            //            logNet.WriteInfo("[Grpc]", "flag_finishWriteExcelFile 写入IEC成功");
+                            //        }
+                            //        else
+                            //        {
+                            //            //Console.WriteLine("{0}      flag_finishWriteExcelFile写入IEC: fail", DateTime.Now);
+                            //            logNet.WriteError("[Grpc]", "flag_finishWriteExcelFile 写入IEC失败");
+                            //        }
+
+                            //        IecTriggersNumber = 0;  //为了防止IEC连续两次赋值true
+
+                            //    });
+
+                            //    IecTriggersNumber++;
+
+                            //    if (IecTriggersNumber == 1)
+                            //    {
+                            //        thr[6].Start();
+                            //    }
+
+                            //}
 
                             #endregion
 
